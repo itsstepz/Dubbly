@@ -1,0 +1,7 @@
+PySide6>=6.7
+faster-whisper>=1.1.0
+ctranslate2>=4.4
+sentencepiece>=0.2
+huggingface_hub>=0.24
+imageio-ffmpeg>=0.5
+certifi
