@@ -157,5 +157,19 @@
  "Выберите файл голоса с расширением .onnx.": "Elige un archivo de voz con la extensión .onnx.",
  "Файл не найден.": "Archivo no encontrado.",
  "Файл слишком маленький для голоса Piper. Проверьте, что он скачан полностью.": "El archivo es demasiado pequeño para una voz de Piper. Comprueba que se descargó por completo.",
- "Файл «{name}» повреждён: это не настройки голоса Piper.": "El archivo «{name}» está dañado: no son ajustes de una voz de Piper."
+ "Файл «{name}» повреждён: это не настройки голоса Piper.": "El archivo «{name}» está dañado: no son ajustes de una voz de Piper.",
+ "Название модели в Ollama. Dubbly скачает её сам при первом запуске.": "Nombre del modelo en Ollama. Dubbly lo descarga por sí solo en el primer uso.",
+ "Например: стрим по Minecraft, много игрового сленга.\nCreeper = крипер\nNether = Незер": "Por ejemplo: un directo de Minecraft, mucha jerga de juegos.\nCreeper = creeper\nNether = Nether",
+ "Модель Ollama": "Modelo de Ollama",
+ "Тема помогает распознать имена и термины. Строка «слово = перевод» задаёт точный перевод.": "El tema ayuda a reconocer nombres y términos. Una línea «palabra = traducción» fija una traducción exacta.",
+ "О чём видео и термины (необязательно)": "De qué trata el vídeo y términos (opcional)",
+ "Скачиваю модель {model} через Ollama (один раз)…": "Descargando el modelo {model} con Ollama (una vez)…",
+ "Ollama ответила ошибкой: {err}": "Ollama devolvió un error: {err}",
+ "Не удалось связаться с Ollama ({url}). Установите её с сайта ollama.com и запустите, затем начните заново. Или выберите другой переводчик.": "No se pudo conectar con Ollama ({url}). Instálelo desde ollama.com e inícielo, luego vuelva a empezar. O elija otro traductor.",
+ "Переводит по смыслу, понимает сленг и обороты. Нужна бесплатная программа Ollama (ollama.com). Модель ~3 ГБ, памяти от 6 ГБ, медленнее остальных.": "Traduce por el sentido, entiende la jerga y las expresiones. Necesita el programa gratuito Ollama (ollama.com). Modelo ~3 GB, memoria desde 6 GB, más lento que los demás.",
+ "Реплика {n} не переведена, озвучки у неё не будет: {line}": "La línea {n} no se tradujo y no tendrá doblaje: {line}",
+ "Читаю весь текст, чтобы понять тему и термины…": "Leyendo todo el texto para entender el tema y los términos…",
+ "Не удалось определить тему ({err}), перевожу без неё.": "No se pudo determinar el tema ({err}), traduzco sin él.",
+ "Тема видео: {topic}": "Tema del vídeo: {topic}",
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Borrador de términos (no se aplican solos: revíselos y, si quiere, cópielos en el campo «De qué trata el vídeo y términos»):"
 }

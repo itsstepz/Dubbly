@@ -157,5 +157,19 @@
  "Выберите файл голоса с расширением .onnx.": "Choisissez un fichier de voix avec l’extension .onnx.",
  "Файл не найден.": "Fichier introuvable.",
  "Файл слишком маленький для голоса Piper. Проверьте, что он скачан полностью.": "Le fichier est trop petit pour une voix Piper. Vérifiez qu’il est entièrement téléchargé.",
- "Файл «{name}» повреждён: это не настройки голоса Piper.": "Le fichier « {name} » est endommagé : ce ne sont pas des réglages de voix Piper."
+ "Файл «{name}» повреждён: это не настройки голоса Piper.": "Le fichier « {name} » est endommagé : ce ne sont pas des réglages de voix Piper.",
+ "Название модели в Ollama. Dubbly скачает её сам при первом запуске.": "Nom du modèle dans Ollama. Dubbly le télécharge lui-même au premier lancement.",
+ "Например: стрим по Minecraft, много игрового сленга.\nCreeper = крипер\nNether = Незер": "Par exemple : un stream Minecraft, beaucoup d'argot de joueurs.\nCreeper = creeper\nNether = Nether",
+ "Модель Ollama": "Modèle Ollama",
+ "Тема помогает распознать имена и термины. Строка «слово = перевод» задаёт точный перевод.": "Le sujet aide à reconnaître les noms et les termes. Une ligne «mot = traduction» impose une traduction exacte.",
+ "О чём видео и термины (необязательно)": "Sujet de la vidéo et termes (facultatif)",
+ "Скачиваю модель {model} через Ollama (один раз)…": "Téléchargement du modèle {model} via Ollama (une seule fois)…",
+ "Ollama ответила ошибкой: {err}": "Ollama a renvoyé une erreur : {err}",
+ "Не удалось связаться с Ollama ({url}). Установите её с сайта ollama.com и запустите, затем начните заново. Или выберите другой переводчик.": "Impossible de joindre Ollama ({url}). Installez-le depuis ollama.com et lancez-le, puis recommencez. Ou choisissez un autre traducteur.",
+ "Переводит по смыслу, понимает сленг и обороты. Нужна бесплатная программа Ollama (ollama.com). Модель ~3 ГБ, памяти от 6 ГБ, медленнее остальных.": "Traduit le sens, comprend l'argot et les expressions. Nécessite le programme gratuit Ollama (ollama.com). Modèle ~3 Go, mémoire à partir de 6 Go, plus lent que les autres.",
+ "Реплика {n} не переведена, озвучки у неё не будет: {line}": "La réplique {n} n'a pas été traduite et ne sera pas doublée : {line}",
+ "Читаю весь текст, чтобы понять тему и термины…": "Lecture de tout le texte pour comprendre le sujet et les termes…",
+ "Не удалось определить тему ({err}), перевожу без неё.": "Impossible de déterminer le sujet ({err}), traduction sans lui.",
+ "Тема видео: {topic}": "Sujet de la vidéo : {topic}",
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Brouillon de termes (non appliqués automatiquement : vérifiez-les et, si vous voulez, copiez-les dans le champ «Sujet de la vidéo et termes») :"
 }

@@ -35,7 +35,7 @@ There is no limit on file size: the program works with the video as a stream and
 |---|---|
 | ffmpeg | Reading the video, extracting sound, assembling the result |
 | faster-whisper (Whisper models) | Speech recognition, language detection |
-| NLLB-200, Opus-MT or MADLAD-400 (selectable) | Translation |
+| NLLB-200, Opus-MT, MADLAD-400 or a language model in Ollama (selectable) | Translation |
 | Piper | Speech synthesis and its voices |
 | PySide6 (Qt) | The program window |
 
@@ -57,7 +57,7 @@ The figures are approximate: they depend on the chosen models and on the length 
 What takes the space:
 
 - recognition models: about 0.5 GB (`small`), 1.5 GB (`medium`), 1.6 GB (`large-v3-turbo`), 3 GB (`large-v3`);
-- translation model: about 0.6 GB for NLLB-200, 3 GB for MADLAD-400, about 0.3 GB per language pair for Opus-MT;
+- translation model: about 0.6 GB for NLLB-200, 3 GB for MADLAD-400, about 0.3 GB per language pair for Opus-MT, about 3 GB for the `gemma3:4b` model in Ollama (Ollama is installed separately from ollama.com);
 - the speech engine and one voice: about 0.1 GB;
 - CUDA libraries for the graphics card: about 1 GB;
 - temporary files while working: roughly 0.5 GB per hour of video, removed after a successful run.

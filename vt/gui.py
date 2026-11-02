@@ -156,7 +156,7 @@ class MainWindow(QWidget):
             self.resize(740, 820)
             return
         w = min(1240 if self.wide else 760, int(a.width() * 0.92))
-        h = min(820 if self.wide else 900, int(a.height() * 0.86))
+        h = min(940, int(a.height() * 0.9))
         self.resize(w, h)
         self.move(a.left() + (a.width() - w) // 2, a.top() + max(0, (a.height() - h) // 2 - 12))
 
@@ -285,6 +285,7 @@ class MainWindow(QWidget):
         left = QVBoxLayout()
         left.setSpacing(9 if self.compact else 14)
         right = QVBoxLayout()
+        right.setSpacing(9 if self.compact else 14)
 
         # --- карточка «Файлы»
         files, fl = self._card(_("Файлы"))
@@ -348,6 +349,17 @@ class MainWindow(QWidget):
         vr.addWidget(self.del_btn)
         self.mirror = QLineEdit()
         self.mirror.setPlaceholderText(_("необязательно, например https://hf-mirror.com"))
+        self.llm_model = QLineEdit()
+        self.llm_model.setPlaceholderText(DEFAULT_SETTINGS["llm_model"])
+        self.llm_model.setToolTip(_("Название модели в Ollama. Dubbly скачает её сам при первом запуске."))
+        self.context = role(QPlainTextEdit(), "input")  # обычный шрифт, как у полей ввода
+        self.context.setPlaceholderText(_("Например: стрим по Minecraft, много игрового сленга.\n"
+                                          "Creeper = крипер\nNether = Незер"))
+        self.context.setFixedHeight(76 if self.compact else 88)
+        self.context.setTabChangesFocus(True)
+        context_hint = role(QLabel(_("Тема помогает распознать имена и термины. "
+                                     "Строка «слово = перевод» задаёт точный перевод.")), "hint")
+        context_hint.setWordWrap(True)
 
         g = QGridLayout()
         g.setHorizontalSpacing(14)
@@ -358,7 +370,12 @@ class MainWindow(QWidget):
         g.addWidget(self._field(_("Переводчик"), self.engine, self.engine_hint), 1, 0)
         g.addWidget(self._field(_("Качество распознавания"), self.model, self.model_hint), 1, 1)
         g.addWidget(self._field(_("Голос"), voice_row), 2, 0, 1, 2)
-        g.addWidget(self._field(_("Зеркало моделей"), self.mirror), 3, 0, 1, 2)
+        # зеркало и модель Ollama в одной строке; без Ollama зеркало на всю ширину (_update_hints)
+        self.trans_grid = g
+        self.mirror_row = self._field(_("Зеркало моделей"), self.mirror)
+        self.llm_row = self._field(_("Модель Ollama"), self.llm_model)
+        g.addWidget(self.mirror_row, 3, 0, 1, 2)
+        g.addWidget(self.llm_row, 3, 1)
         g.setColumnStretch(0, 1)
         g.setColumnStretch(1, 1)
         tl.addLayout(g)
@@ -425,6 +442,12 @@ class MainWindow(QWidget):
         left.addLayout(act)
         left.addStretch(1)
 
+        # --- тема и термины: справа над ходом работы (там есть место, слева не помещается)
+        ctx, cl = self._card(_("О чём видео и термины (необязательно)"))
+        cl.addWidget(self.context)
+        cl.addWidget(context_hint)
+        right.addWidget(ctx)
+
         # --- ход работы
         prog, pl = self._card(_("Ход работы"))
         top = QHBoxLayout()
@@ -473,6 +496,8 @@ class MainWindow(QWidget):
             self.gpu.setChecked(bool(self.s["use_gpu"]))
             self.open_chk.setChecked(bool(self.s["open_folder"]))
             self.mirror.setText(self.s["hf_endpoint"])
+            self.llm_model.setText(self.s.get("llm_model", ""))
+            self.context.setPlainText(self.s.get("context", ""))
             self._update_hints()
             self.apply_theme(self.s.get("theme", "auto"))
             self.fill_voices()
@@ -488,10 +513,15 @@ class MainWindow(QWidget):
             orig_volume=self.vol.value(), save_srt=self.srt.isChecked(),
             use_gpu=self.gpu.isChecked(), open_folder=self.open_chk.isChecked(),
             max_speedup=self.speed.value() / 10, sync_offset_ms=self.offset.value() * 10,
-            hf_endpoint=self.mirror.text().strip())
+            hf_endpoint=self.mirror.text().strip(),
+            llm_model=self.llm_model.text().strip() or DEFAULT_SETTINGS["llm_model"],
+            context=self.context.toPlainText().strip())
 
     def _update_hints(self, *_args):
         self.engine_hint.setText(_(translate.TRANSLATOR_HINTS.get(self.engine.currentData(), "")))
+        llm = self.engine.currentData() == "llm"
+        self.llm_row.setVisible(llm)
+        self.trans_grid.addWidget(self.mirror_row, 3, 0, 1, 1 if llm else 2)
         self.model_hint.setText(_(WHISPER_HINTS.get(self.model.currentData(), "")))
 
     def _offset_text(self, v: int):
@@ -696,7 +726,9 @@ class MainWindow(QWidget):
             orig_volume=self.s["orig_volume"] / 100.0, save_srt=self.s["save_srt"],
             hf_endpoint=self.s["hf_endpoint"], translator=self.s["translator"],
             use_gpu=self.s["use_gpu"], max_speedup=self.s["max_speedup"],
-            sync_offset=self.s["sync_offset_ms"] / 1000.0, ui_lang=i18n.current())
+            sync_offset=self.s["sync_offset_ms"] / 1000.0, ui_lang=i18n.current(),
+            context=self.s["context"], llm_model=self.s["llm_model"],
+            ollama_url=self.s.get("ollama_url", ""))
         self.logbox.clear()
         self.bar.setRange(0, 1000)
         self.bar.setValue(0)

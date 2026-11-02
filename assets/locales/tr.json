@@ -157,5 +157,19 @@
  "Выберите файл голоса с расширением .onnx.": "Uzantısı .onnx olan bir ses dosyası seçin.",
  "Файл не найден.": "Dosya bulunamadı.",
  "Файл слишком маленький для голоса Piper. Проверьте, что он скачан полностью.": "Dosya bir Piper sesi için çok küçük. Tamamen indirildiğinden emin olun.",
- "Файл «{name}» повреждён: это не настройки голоса Piper.": "“{name}” dosyası bozuk: bunlar Piper ses ayarları değil."
+ "Файл «{name}» повреждён: это не настройки голоса Piper.": "“{name}” dosyası bozuk: bunlar Piper ses ayarları değil.",
+ "Название модели в Ollama. Dubbly скачает её сам при первом запуске.": "Ollama'daki model adı. Dubbly ilk çalıştırmada onu kendisi indirir.",
+ "Например: стрим по Minecraft, много игрового сленга.\nCreeper = крипер\nNether = Незер": "Örneğin: bir Minecraft yayını, bolca oyuncu argosu.\nCreeper = creeper\nNether = Nether",
+ "Модель Ollama": "Ollama modeli",
+ "Тема помогает распознать имена и термины. Строка «слово = перевод» задаёт точный перевод.": "Konu, isimleri ve terimleri tanımaya yardım eder. «kelime = çeviri» satırı kesin bir çeviri belirler.",
+ "О чём видео и термины (необязательно)": "Video ne hakkında ve terimler (isteğe bağlı)",
+ "Скачиваю модель {model} через Ollama (один раз)…": "{model} modeli Ollama ile indiriliyor (bir kez)…",
+ "Ollama ответила ошибкой: {err}": "Ollama bir hata döndürdü: {err}",
+ "Не удалось связаться с Ollama ({url}). Установите её с сайта ollama.com и запустите, затем начните заново. Или выберите другой переводчик.": "Ollama'ya bağlanılamadı ({url}). ollama.com adresinden kurup başlatın, sonra yeniden başlayın. Ya da başka bir çevirmen seçin.",
+ "Переводит по смыслу, понимает сленг и обороты. Нужна бесплатная программа Ollama (ollama.com). Модель ~3 ГБ, памяти от 6 ГБ, медленнее остальных.": "Anlama göre çevirir, argoyu ve deyimleri anlar. Ücretsiz Ollama programı gerekir (ollama.com). Model ~3 GB, bellek en az 6 GB, diğerlerinden yavaş.",
+ "Реплика {n} не переведена, озвучки у неё не будет: {line}": "{n}. replik çevrilmedi, seslendirilmeyecek: {line}",
+ "Читаю весь текст, чтобы понять тему и термины…": "Konuyu ve terimleri anlamak için metnin tamamını okuyorum…",
+ "Не удалось определить тему ({err}), перевожу без неё.": "Konu belirlenemedi ({err}), konu olmadan çeviriyorum.",
+ "Тема видео: {topic}": "Videonun konusu: {topic}",
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Terim taslağı (kendiliğinden uygulanmaz: kontrol edin ve isterseniz «Video ne hakkında ve terimler» alanına kopyalayın):"
 }

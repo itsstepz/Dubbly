@@ -157,5 +157,19 @@
  "Выберите файл голоса с расширением .onnx.": "Choose a voice file with the .onnx extension.",
  "Файл не найден.": "File not found.",
  "Файл слишком маленький для голоса Piper. Проверьте, что он скачан полностью.": "The file is too small for a Piper voice. Check that it was downloaded completely.",
- "Файл «{name}» повреждён: это не настройки голоса Piper.": "The file “{name}” is damaged: these are not Piper voice settings."
+ "Файл «{name}» повреждён: это не настройки голоса Piper.": "The file “{name}” is damaged: these are not Piper voice settings.",
+ "Название модели в Ollama. Dubbly скачает её сам при первом запуске.": "Model name in Ollama. Dubbly downloads it by itself on the first run.",
+ "Например: стрим по Minecraft, много игрового сленга.\nCreeper = крипер\nNether = Незер": "For example: a Minecraft stream, lots of gaming slang.\nCreeper = Creeper\nNether = Nether",
+ "Модель Ollama": "Ollama model",
+ "Тема помогает распознать имена и термины. Строка «слово = перевод» задаёт точный перевод.": "The topic helps recognize names and terms. A line «word = translation» sets an exact translation.",
+ "О чём видео и термины (необязательно)": "What the video is about, and terms (optional)",
+ "Скачиваю модель {model} через Ollama (один раз)…": "Downloading the {model} model through Ollama (once)…",
+ "Ollama ответила ошибкой: {err}": "Ollama returned an error: {err}",
+ "Не удалось связаться с Ollama ({url}). Установите её с сайта ollama.com и запустите, затем начните заново. Или выберите другой переводчик.": "Could not connect to Ollama ({url}). Install it from ollama.com and start it, then start again. Or choose another translator.",
+ "Переводит по смыслу, понимает сленг и обороты. Нужна бесплатная программа Ollama (ollama.com). Модель ~3 ГБ, памяти от 6 ГБ, медленнее остальных.": "Translates by meaning, understands slang and idioms. Needs the free Ollama program (ollama.com). Model ~3 GB, memory from 6 GB, slower than the others.",
+ "Реплика {n} не переведена, озвучки у неё не будет: {line}": "Line {n} was not translated and will not be dubbed: {line}",
+ "Читаю весь текст, чтобы понять тему и термины…": "Reading the whole text to understand the topic and terms…",
+ "Не удалось определить тему ({err}), перевожу без неё.": "Could not determine the topic ({err}), translating without it.",
+ "Тема видео: {topic}": "Video topic: {topic}",
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Draft of terms (not applied automatically: check them and, if you like, copy them into the «What the video is about, and terms» field):"
 }

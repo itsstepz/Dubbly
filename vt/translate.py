@@ -2,15 +2,21 @@
 
 * nllb   — NLLB-200 600M, любой↔любой, лицензия весов CC-BY-NC (только некоммерческое);
 * opus   — Opus-MT, отдельная модель на пару языков (если пары нет — через английский);
-* madlad — MADLAD-400 3B, любой↔любой, Apache 2.0, тяжёлая.
+* madlad — MADLAD-400 3B, любой↔любой, Apache 2.0, тяжёлая;
+* llm    — языковая модель в программе Ollama (см. llm.py): переводит по смыслу, с контекстом.
+
+Поле «О чём видео и термины» (context): обычные строки — описание темы, строки вида
+«слово = перевод» — словарь. Для llm всё уходит в задание модели; для остальных
+движков термины из словаря подставляются в текст перед переводом.
 
 Названия репозиториев вынесены в константы ниже: если автор модели переименовал
 или удалил репозиторий, достаточно поменять строку здесь.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Tuple
 
 from .common import Cancelled, CancelToken, models_dir, repo_total_size, watch_folder
 from .languages import nllb_of
@@ -25,6 +31,7 @@ TRANSLATORS = {
     "nllb": "NLLB-200",
     "opus": "Opus-MT",
     "madlad": "MADLAD-400",
+    "llm": "Ollama (LLM)",
 }
 
 # Что это за модель и как влияет на компьютер (цифры примерные: зависят от системы)
@@ -35,6 +42,8 @@ TRANSLATOR_HINTS = {
                "Редкие пары переводит через английский."),
     "madlad": N_("Крупная модель: ~3 ГБ, памяти от 4 ГБ, лучше с видеокартой. Любые языки. "
                  "Свободная лицензия."),
+    "llm": N_("Переводит по смыслу, понимает сленг и обороты. Нужна бесплатная программа Ollama "
+              "(ollama.com). Модель ~3 ГБ, памяти от 6 ГБ, медленнее остальных."),
 }
 
 Log = Callable[[str], None]
@@ -167,6 +176,33 @@ def _run_opus(texts, src, tgt, endpoint, cancel, progress, log, hook):
 
 ENGINES = {"nllb": _run_nllb, "opus": _run_opus, "madlad": _run_madlad}
 
+_GLOSS_SEP = re.compile(r"\s*(?:=|->|→)\s*")
+
+
+def parse_context(text: str) -> Tuple[str, List[Tuple[str, str]]]:
+    """Разбирает поле «О чём видео и термины» на (описание темы, [(термин, перевод)]).
+
+    «Creeper = крипер» — переводить так; «Kubernetes =» — оставить как есть.
+    """
+    topic, gloss = [], []
+    for line in (text or "").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = _GLOSS_SEP.split(line, maxsplit=1)
+        if len(parts) == 2 and parts[0]:
+            gloss.append((parts[0], parts[1] or parts[0]))
+        else:
+            topic.append(line)
+    return " ".join(topic), gloss
+
+
+def apply_glossary(text: str, gloss: List[Tuple[str, str]]) -> str:
+    """Заменяет термины в исходном тексте их переводом (целые слова, без учёта регистра)."""
+    for src, dst in sorted(gloss, key=lambda g: -len(g[0])):
+        text = re.sub(r"(?<!\w)" + re.escape(src) + r"(?!\w)", lambda _m, d=dst: d, text, flags=re.I)
+    return text
+
 
 def translate_segments(
     segments: List[dict],
@@ -178,17 +214,29 @@ def translate_segments(
     log: Log,
     dl_hook: Hook = None,
     engine: str = "nllb",
+    context: str = "",
+    llm_model: str = "",
+    ollama_url: str = "",
 ) -> List[dict]:
     """Добавляет к каждому сегменту поле `tr` с переводом."""
     if src == tgt:
         for s in segments:
             s["tr"] = s["text"]
         return segments
-    if engine not in ENGINES:
+    if engine not in ENGINES and engine != "llm":
         raise RuntimeError(_("Неизвестный переводчик: {engine}", engine=engine))
     log(_("Перевожу ({engine}): {src} → {tgt}…", engine=engine, src=src, tgt=tgt))
+    topic, gloss = parse_context(context)
     texts = [s["text"] for s in segments]
-    out = ENGINES[engine](texts, src, tgt, endpoint, cancel, progress, log, dl_hook)
+    if engine == "llm":
+        from . import llm
+
+        out = llm.translate(texts, src, tgt, topic, gloss, llm_model, ollama_url,
+                            cancel, progress, log, dl_hook)
+    else:
+        if gloss:
+            texts = [apply_glossary(t, gloss) for t in texts]
+        out = ENGINES[engine](texts, src, tgt, endpoint, cancel, progress, log, dl_hook)
     for s, t in zip(segments, out):
         s["tr"] = t
     return segments

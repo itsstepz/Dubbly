@@ -113,6 +113,65 @@ def split_sentences(words, pause: float = 0.7, soft_after: float = 6.0,
     return chunks
 
 
+def join_sentences(chunks: List[dict], max_len: float = 15.0, max_gap: float = 1.5) -> List[dict]:
+    """Склеивает обрывки одной фразы, разрезанной паузой («the thing that» + «nobody tells you…»).
+
+    Переводчик понимает целое предложение гораздо лучше, чем куски. Кусок присоединяется
+    к предыдущему, если тот не закончен знаком препинания, пауза между ними не больше
+    max_gap, а вся фраза получается не длиннее max_len секунд.
+    """
+    out: List[dict] = []
+    for c in chunks:
+        if out:
+            prev = out[-1]
+            if (not prev["text"].rstrip().endswith(SENTENCE_END)
+                    and c["start"] - prev["end"] <= max_gap
+                    and c["end"] - prev["start"] <= max_len):
+                prev["text"] = prev["text"].rstrip() + " " + c["text"].lstrip()
+                prev["end"] = c["end"]
+                continue
+        out.append(dict(c))
+    return out
+
+
+# Образец речи со знаками препинания на языке видео. Whisper (особенно large-v3-turbo) на длинных
+# видео часто «забывает» точки и заглавные буквы; тогда реплики режутся посреди фразы и хуже
+# переводятся. Образец в подсказке (hotwords) возвращает пунктуацию: на 3,5 минутах английской
+# речи было 4 конца предложения, с образцом 28.
+PUNCT_HINTS = {
+    "en": "Hello, everyone. Okay, so today we'll talk about it.",
+    "ru": "Привет всем. Итак, сегодня мы поговорим об этом.",
+    "uk": "Привіт усім. Отже, сьогодні ми поговоримо про це.",
+    "de": "Hallo zusammen. Also, heute sprechen wir darüber.",
+    "fr": "Bonjour à tous. Alors, aujourd'hui, on va en parler.",
+    "es": "Hola a todos. Bueno, hoy vamos a hablar de esto.",
+    "it": "Ciao a tutti. Allora, oggi ne parliamo.",
+    "pt": "Olá a todos. Então, hoje vamos falar sobre isso.",
+    "pl": "Cześć wszystkim. Dobra, dzisiaj o tym porozmawiamy.",
+    "tr": "Herkese merhaba. Tamam, bugün bunu konuşacağız.",
+    "nl": "Hallo allemaal. Oké, vandaag gaan we het erover hebben.",
+    "zh": "大家好。好的，今天我们来聊一聊这个。",
+    "ja": "皆さん、こんにちは。では、今日はこれについて話します。",
+    "ko": "여러분, 안녕하세요. 자, 오늘은 이것에 대해 이야기해 보겠습니다.",
+}
+
+
+def punct_hint(lang: Optional[str]) -> str:
+    if not lang:
+        return ""
+    if lang in PUNCT_HINTS:
+        return PUNCT_HINTS[lang]
+    from .languages import SAMPLES  # для остальных языков — фраза для прослушивания голоса
+
+    return SAMPLES.get(lang, "")
+
+
+def make_hotwords(topic: str, terms: List[str], limit: int = 200) -> Optional[str]:
+    """Подсказка для распознавания: тема и термины (Whisper чаще пишет их правильно)."""
+    text = " ".join([topic.strip()] + [t.strip() for t in terms if t.strip()]).strip()
+    return text[:limit] or None
+
+
 def transcribe(
     audio_path: str,
     duration: float,
@@ -123,6 +182,7 @@ def transcribe(
     progress: Callable[[float], None],
     log: Callable[[str], None],
     dl_hook: Optional[Callable[[int, int], None]] = None,
+    hotwords: Optional[str] = None,
 ) -> Tuple[List[dict], str]:
     """Возвращает ([{start, end, text}], определённый_язык)."""
     import numpy as np
@@ -143,13 +203,22 @@ def transcribe(
         log(_("Распознаю речь: модель {name}, видеокарта…", name=name) if device == "cuda"
             else _("Распознаю речь: модель {name}, процессор…", name=name))
         model = WhisperModel(path, device=device, compute_type=compute)
+        lang = None if src_lang == "auto" else src_lang
+        if lang is None:
+            # язык нужен заранее, чтобы дать образец пунктуации на нём
+            try:
+                lang = model.detect_language(audio, vad_filter=True, language_detection_segments=3)[0]
+            except Exception:
+                lang = None  # не вышло — Whisper определит язык сам, без образца
+        hint = " ".join(x for x in (punct_hint(lang), hotwords or "") if x) or None
         segs, info = model.transcribe(
             audio,
-            language=None if src_lang == "auto" else src_lang,
+            language=lang,
             vad_filter=True,
             word_timestamps=True,   # точное время слов: для начала реплик и разбивки на предложения
             beam_size=5,
             condition_on_previous_text=False,
+            hotwords=hint,          # образец пунктуации + тема и термины из поля «О чём видео»
         )
         out: List[dict] = []
         for s in segs:  # генератор: сегменты приходят по мере распознавания
@@ -161,7 +230,7 @@ def transcribe(
                 out.append({"start": float(s.start), "end": float(s.end), "text": s.text.strip()})
             if duration > 0:
                 progress(min(1.0, s.end / duration))
-        return out, info.language
+        return join_sentences(out), info.language
 
     if gpu:
         try:

@@ -111,6 +111,8 @@ QPlainTextEdit {
   font-family: $logfont"Cascadia Mono", Consolas, monospace; font-size: 12px;
   selection-background-color: $acc; selection-color: #ffffff;
 }
+QPlainTextEdit[role="input"] { color: $tx; font-size: 13px; border-radius: 9px; }
+QPlainTextEdit[role="input"]:focus { border: 1px solid $acc; }
 QScrollBar:vertical { background: transparent; width: 10px; margin: 2px; }
 QScrollBar::handle:vertical { background: $bd; border-radius: 4px; min-height: 24px; }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }

@@ -46,6 +46,9 @@ class Options:
     hf_endpoint: str = ""
     translator: str = "nllb"
     use_gpu: bool = True
+    context: str = ""              # «О чём видео и термины»: тема + строки «слово = перевод»
+    llm_model: str = ""            # модель Ollama для переводчика llm (пусто — llm.DEFAULT_MODEL)
+    ollama_url: str = ""           # адрес Ollama (пусто — llm.DEFAULT_URL)
 
 
 Progress = Callable[[float, str], None]
@@ -214,8 +217,9 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
                         "-f", "f32le", "-c:a", "pcm_f32le", str(audio)], cancel, duration, stage("extract", _("Извлекаю звук…")))
 
         # 2-3. текст и перевод (кэшируются, чтобы продолжить после сбоя)
-        meta = {"src": opts.src_lang, "tgt": opts.tgt_lang, "model": opts.whisper_model, "translator": opts.translator, "split": 2,
-                "size": src_path.stat().st_size}
+        meta = {"src": opts.src_lang, "tgt": opts.tgt_lang, "model": opts.whisper_model, "translator": opts.translator, "split": 4,
+                "size": src_path.stat().st_size, "context": opts.context.strip(),
+                "llm": opts.llm_model if opts.translator == "llm" else ""}
         cache = work / "segments.json"
         data = None
         if cache.exists():
@@ -228,16 +232,19 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
 
         if data is None:
             cuda_libs.prepare(opts.use_gpu, cancel, log, dl_hook("asr", "gpu"))
+            topic, gloss = translate.parse_context(opts.context)
             segments, lang = asr.transcribe(
                 str(audio), duration, opts.whisper_model, opts.src_lang, opts.hf_endpoint,
-                cancel, stage("asr", _("Распознаю речь…")), log, dl_hook("asr"))
+                cancel, stage("asr", _("Распознаю речь…")), log, dl_hook("asr"),
+                hotwords=asr.make_hotwords(topic, [a for a, _b in gloss]))
             if not segments:
                 raise RuntimeError(_("Речь в видео не найдена."))
             log(_("Найдено реплик: {n}, язык оригинала: {name} ({code})", n=len(segments), name=name_of(lang), code=lang))
             segments = translate.translate_segments(
                 segments, lang, opts.tgt_lang, opts.hf_endpoint, cancel,
                 stage("translate", _("Перевожу текст…")), log, dl_hook("translate"),
-                engine=opts.translator)
+                engine=opts.translator, context=opts.context, llm_model=opts.llm_model,
+                ollama_url=opts.ollama_url)
             data = {"meta": meta, "lang": lang, "segments": segments, "done": True}
             cache.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
         else:

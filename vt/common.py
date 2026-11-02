@@ -101,6 +101,9 @@ DEFAULT_SETTINGS = {
     "orig_volume": 12,          # громкость оригинала под озвучкой, %
     "save_srt": True,
     "keep_work": False,
+    "context": "",              # «О чём видео и термины»
+    "llm_model": "gemma3:4b",   # модель Ollama для переводчика «Ollama (LLM)»
+    "ollama_url": "",           # адрес Ollama; пусто — http://127.0.0.1:11434
 }
 
 
