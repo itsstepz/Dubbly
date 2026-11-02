@@ -186,7 +186,6 @@
  "~5 ГБ. Для видеокарты от 8 ГБ.": "~5 GB. 8 GB ve üzeri ekran kartı için.",
  "Дополнительно": "Gelişmiş",
  "Модель нейросети. Скачивается сама при первом запуске.": "Dil modeli. İlk çalıştırmada kendiliğinden indirilir.",
- "Модель в Ollama: выберите из списка или впишите название. Dubbly скачает её сам при первом запуске.": "Ollama'daki model: listeden seçin veya bir ad yazın. Dubbly ilk çalıştırmada onu kendisi indirir.",
  "Уже скачана в Ollama.": "Ollama'da zaten indirilmiş.",
  "Скачиваю движок нейросети llama.cpp (один раз)…": "llama.cpp motoru indiriliyor (bir kez)…",
  "Скачиваю модель {model} (один раз)…": "{model} modeli indiriliyor (bir kez)…",
@@ -206,5 +205,6 @@
  "Видеокарта AMD или Intel (Vulkan)": "AMD veya Intel ekran kartı (Vulkan)",
  "Только процессор": "Yalnızca işlemci",
  "Ускорение": "Hızlandırma",
- "llama.cpp ответил ошибкой: {err}": "llama.cpp bir hata döndürdü: {err}"
+ "llama.cpp ответил ошибкой: {err}": "llama.cpp bir hata döndürdü: {err}",
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Ollama'daki model: Ollama'da zaten olanlar ve önerilenler. Dubbly seçileni ilk çalıştırmada kendisi indirir."
 }

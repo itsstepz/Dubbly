@@ -186,7 +186,6 @@
  "~5 ГБ. Для видеокарты от 8 ГБ.": "~5 GB. For a graphics card with 8 GB or more.",
  "Дополнительно": "Advanced",
  "Модель нейросети. Скачивается сама при первом запуске.": "Language model. Downloaded automatically on the first run.",
- "Модель в Ollama: выберите из списка или впишите название. Dubbly скачает её сам при первом запуске.": "Model in Ollama: pick one from the list or type a name. Dubbly downloads it by itself on the first run.",
  "Уже скачана в Ollama.": "Already downloaded in Ollama.",
  "Скачиваю движок нейросети llama.cpp (один раз)…": "Downloading the llama.cpp engine (once)…",
  "Скачиваю модель {model} (один раз)…": "Downloading the {model} model (once)…",
@@ -206,5 +205,6 @@
  "Видеокарта AMD или Intel (Vulkan)": "AMD or Intel graphics card (Vulkan)",
  "Только процессор": "Processor only",
  "Ускорение": "Acceleration",
- "llama.cpp ответил ошибкой: {err}": "llama.cpp returned an error: {err}"
+ "llama.cpp ответил ошибкой: {err}": "llama.cpp returned an error: {err}",
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Model in Ollama: those already in Ollama and recommended ones. Dubbly downloads the chosen one by itself on the first run."
 }

@@ -590,26 +590,26 @@ class MainWindow(QWidget):
         else:
             names = list(dict.fromkeys(self._ollama_models + list(self.MODEL_HINTS)))
             self.tags.fetch(self.s.get("ollama_url", ""))  # какие модели уже есть в Ollama
+        if eng == "llm" and current not in names:
+            # выбранная раньше модель, которой ещё нет в списке (список из Ollama приходит позже) —
+            # оставляем её, чтобы выбор не сбрасывался
+            names.append(current)
+        elif current not in names:
+            current = names[0]
         self.llm_model.blockSignals(True)
         self.llm_model.clear()
-        self.llm_model.setEditable(eng == "llm")  # в Ollama можно вписать любую модель
+        self.llm_model.setEditable(False)  # только выбор из списка: вписывать своё нельзя (просьба владельца)
         for n in names:
             self.llm_model.addItem(n)
             tip = _(self.MODEL_HINTS[n]) if n in self.MODEL_HINTS else ""
             if n in self._ollama_models and eng == "llm":
                 tip = (tip + " " + _("Уже скачана в Ollama.")).strip()
             self.llm_model.setItemData(self.llm_model.count() - 1, tip, Qt.ToolTipRole)
-        if eng == "local" and current not in names:
-            current = names[0]
-        i = self.llm_model.findText(current)
-        if i >= 0:
-            self.llm_model.setCurrentIndex(i)
-        else:
-            self.llm_model.setEditText(current)
+        self.llm_model.setCurrentIndex(max(0, self.llm_model.findText(current)))
         self.llm_model.setProperty("eng", eng)
         self.llm_model.setToolTip(_("Модель нейросети. Скачивается сама при первом запуске.") if eng == "local"
-                                  else _("Модель в Ollama: выберите из списка или впишите название. "
-                                         "Dubbly скачает её сам при первом запуске."))
+                                  else _("Модель в Ollama: скачанные в Ollama и рекомендованные. "
+                                         "Dubbly скачает выбранную сам при первом запуске."))
         self.llm_model.blockSignals(False)
 
     def on_ollama_tags(self, names: list):
