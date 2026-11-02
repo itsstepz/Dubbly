@@ -1,0 +1,66 @@
+name: Build Windows exe
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+      - name: Build
+        run: >
+          pyinstaller --noconfirm --windowed --name Dubbly
+          --icon assets/icon.ico --add-data "assets;assets"
+          --collect-all faster_whisper --collect-all ctranslate2
+          --collect-all imageio_ffmpeg --collect-data certifi
+          --exclude-module tkinter --exclude-module matplotlib --exclude-module pandas
+          --exclude-module scipy --exclude-module IPython --exclude-module pytest
+          main.py
+      - name: Show build size
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem dist\Dubbly -Recurse -File
+          "Total: {0:N0} MB" -f (($files | Measure-Object Length -Sum).Sum / 1MB)
+          "Largest files:"
+          $files | Sort-Object Length -Descending | Select-Object -First 15 | ForEach-Object {
+            "{0,8:N1} MB  {1}" -f ($_.Length / 1MB), $_.FullName.Substring((Get-Location).Path.Length)
+          }
+      - name: Find Inno Setup
+        id: iscc
+        shell: pwsh
+        run: |
+          $p = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $p)) { choco install innosetup -y --no-progress }
+          if (-not (Test-Path $p)) { throw "ISCC.exe not found" }
+          "path=$p" >> $env:GITHUB_OUTPUT
+      - name: Build installer
+        id: inno
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          & "${{ steps.iscc.outputs.path }}" "/DAppVersion=1.0.${{ github.run_number }}" installer\dubbly.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed with code $LASTEXITCODE" }
+      - name: Upload installer
+        if: steps.inno.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dubbly-Setup
+          path: installer_out/Dubbly-Setup.exe
+          compression-level: 0
+      - name: Upload plain folder (fallback if the installer failed)
+        if: steps.inno.outcome != 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dubbly-windows
+          path: dist/Dubbly
+          compression-level: 9
