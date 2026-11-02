@@ -217,7 +217,23 @@ def _message(lines: List[str], before: List[Tuple[str, str]], after: List[str]) 
     return "\n".join(parts)
 
 
-def _ask(url: str, model: str, system: str, lines: List[str], before: List[Tuple[str, str]],
+# Chat — «спросить модель»: (сообщения, JSON-схема ответа, температура, предел длины) → текст ответа.
+# Одна и та же логика пачек и проверок работает и с Ollama, и со встроенным llama.cpp (llamacpp.py).
+Chat = Callable[[list, dict, float, int], str]
+
+
+def ollama_chat(url: str, model: str) -> Chat:
+    def chat(messages: list, schema: dict, temperature: float, max_tokens: int) -> str:
+        res = _call(url, "/api/chat", {
+            "model": model, "messages": messages, "format": schema,
+            "stream": False, "think": False, "keep_alive": "10m",
+            "options": {"temperature": temperature, "num_ctx": 4096, "num_predict": max_tokens},
+        })
+        return res.get("message", {}).get("content", "")
+    return chat
+
+
+def _ask(chat: Chat, system: str, lines: List[str], before: List[Tuple[str, str]],
          after: List[str], temperature: float) -> List[Optional[str]]:
     n = len(lines)
     item = {"type": "object",
@@ -227,23 +243,15 @@ def _ask(url: str, model: str, system: str, lines: List[str], before: List[Tuple
     schema = {"type": "object",
               "properties": {"translations": {"type": "array", "items": item, "minItems": n, "maxItems": n}},
               "required": ["translations"]}
+    messages = [{"role": "system", "content": system},
+                {"role": "user", "content": _message(lines, before, after)}]
     try:
-        res = _call(url, "/api/chat", {
-            "model": model,
-            "messages": [{"role": "system", "content": system},
-                         {"role": "user", "content": _message(lines, before, after)}],
-            "format": schema,
-            "stream": False,
-            "think": False,
-            "keep_alive": "10m",
-            "options": {"temperature": temperature, "num_ctx": 4096,
-                        "num_predict": 200 + sum(len(t) for t in lines)},
-        })
+        text = chat(messages, schema, temperature, 200 + sum(len(t) for t in lines))
     except OllamaError:
         raise
     except Exception:  # обрыв связи, тайм-аут: попробуем ещё раз по одной строке
         return [None] * n
-    return parse_answer(res.get("message", {}).get("content", ""), lines)
+    return parse_answer(text, lines)
 
 
 # ---------- шаг «прочитать всё»: тема видео и словарь терминов ----------
@@ -271,7 +279,7 @@ def _analyze_prompt(src: str, tgt: str) -> str:
     ])
 
 
-def _analyze_part(url: str, model: str, system: str, text: str) -> Tuple[str, List[Tuple[str, str]]]:
+def _analyze_part(chat: Chat, system: str, text: str) -> Tuple[str, List[Tuple[str, str]]]:
     schema = {"type": "object",
               "properties": {"topic": {"type": "string"},
                              "terms": {"type": "array", "maxItems": 15, "items": {
@@ -281,15 +289,10 @@ def _analyze_part(url: str, model: str, system: str, text: str) -> Tuple[str, Li
                                                 "translation": {"type": "string"}},
                                  "required": ["term", "kind", "translation"]}}},
               "required": ["topic", "terms"]}
-    res = _call(url, "/api/chat", {
-        "model": model,
-        "messages": [{"role": "system", "content": system},
-                     {"role": "user", "content": "Transcript:\n" + text}],
-        "format": schema, "stream": False, "think": False, "keep_alive": "10m",
-        "options": {"temperature": 0.2, "num_ctx": 4096, "num_predict": 800},
-    })
+    answer = chat([{"role": "system", "content": system},
+                   {"role": "user", "content": "Transcript:\n" + text}], schema, 0.2, 800)
     try:
-        data = json.loads(_strip_think(res.get("message", {}).get("content", "")))
+        data = json.loads(_strip_think(answer))
     except ValueError:
         return "", []
     terms = []
@@ -303,7 +306,7 @@ def _analyze_part(url: str, model: str, system: str, text: str) -> Tuple[str, Li
     return str(data.get("topic", "")).strip(), terms
 
 
-def analyze(texts: List[str], src: str, tgt: str, model: str, url: str, cancel: CancelToken,
+def analyze(texts: List[str], src: str, tgt: str, chat: Chat, cancel: CancelToken,
             progress: Callable[[float], None]) -> Tuple[str, List[Tuple[str, str]]]:
     """Читает весь текст по частям и возвращает (тема, [(термин, перевод)])."""
     full = " ".join(texts)
@@ -320,7 +323,7 @@ def analyze(texts: List[str], src: str, tgt: str, model: str, url: str, cancel: 
     low = full.lower()
     for k, part in enumerate(parts):
         cancel.check()
-        t, found = _analyze_part(url, model, system, part)
+        t, found = _analyze_part(chat, system, part)
         topic = topic or t  # тему берём из начала: там автор обычно говорит, о чём видео
         for a, b in found:
             key = a.lower()
@@ -350,16 +353,20 @@ def translate(texts: List[str], src: str, tgt: str, topic: str,
               glossary: Sequence[Tuple[str, str]], model: str, url: str,
               cancel: CancelToken, progress: Callable[[float], None], log: Log,
               hook: Hook = None, auto_context: bool = True,
-              hints: Sequence[Tuple[str, str]] = ()) -> List[str]:
-    url = url or DEFAULT_URL
-    model = model or DEFAULT_MODEL
-    check_server(url)
-    ensure_model(url, model, cancel, log, hook)
+              hints: Sequence[Tuple[str, str]] = (), chat: Optional[Chat] = None) -> List[str]:
+    """Переводит строки. chat не задан — через Ollama (url, model); задан — через него
+    (встроенный llama.cpp передаёт сюда свой Server.chat)."""
+    if chat is None:
+        url = url or DEFAULT_URL
+        model = model or DEFAULT_MODEL
+        check_server(url)
+        ensure_model(url, model, cancel, log, hook)
+        chat = ollama_chat(url, model)
     share = 0.15 if auto_context else 0.0  # доля прогресса на чтение всего текста
     if auto_context:
         log(_("Читаю весь текст, чтобы понять тему и термины…"))
         try:
-            a_topic, a_terms = analyze(texts, src, tgt, model, url, cancel, lambda f: progress(f * share))
+            a_topic, a_terms = analyze(texts, src, tgt, chat, cancel, lambda f: progress(f * share))
         except OllamaError:
             raise
         except Exception as e:  # без темы перевод всё равно возможен
@@ -400,7 +407,7 @@ def translate(texts: List[str], src: str, tgt: str, topic: str,
         chunk = texts[i:j]
         before, _lo = context(i)
         system = system_for(chunk)
-        res = _ask(url, model, system, chunk, before, texts[j:j + CONTEXT_AFTER], 0.3)
+        res = _ask(chat, system, chunk, before, texts[j:j + CONTEXT_AFTER], 0.3)
         for k, tr in enumerate(res):
             cancel.check()
             idx = i + k
@@ -409,8 +416,8 @@ def translate(texts: List[str], src: str, tgt: str, topic: str,
                 ctx, _lo = context(idx)
                 nxt = texts[idx + 1:idx + 1 + CONTEXT_AFTER]
                 one = system_for([texts[idx]])
-                tr = (_ask(url, model, one, [texts[idx]], ctx, nxt, 0.0)[0]
-                      or _ask(url, model, one, [texts[idx]], ctx, nxt, 0.5)[0])
+                tr = (_ask(chat, one, [texts[idx]], ctx, nxt, 0.0)[0]
+                      or _ask(chat, one, [texts[idx]], ctx, nxt, 0.5)[0])
                 if tr is None:
                     log(_("Реплика {n} не переведена, озвучки у неё не будет: {line}",
                           n=idx + 1, line=texts[idx][:80]))

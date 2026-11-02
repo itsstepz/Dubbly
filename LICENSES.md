@@ -19,6 +19,9 @@ The project owner has not chosen a license for Dubbly's source code yet. Until a
 | NLLB-200 (distilled 600M) | Translation ("NLLB-200" in the program) | **CC-BY-NC 4.0, non-commercial only** ✓. Its model card calls it a research model not meant for production use |
 | Opus-MT (Helsinki-NLP) | Translation ("Opus-MT") | CC-BY 4.0 ✓ (attribution required; some converted copies are tagged Apache-2.0) |
 | MADLAD-400 3B (Google) | Translation ("MADLAD-400") | Apache 2.0 ✓ |
+| llama.cpp (build b12058, Vulkan) | Runs the built-in language model ("Нейросеть (встроенная)"). Downloaded from GitHub on first use, not bundled | MIT |
+| Gemma 3 models (Google), GGUF from ggml-org | The built-in translator model. Downloaded from Hugging Face on first use, not bundled | **Gemma Terms of Use** (allows commercial use, but has a prohibited-use policy that passes on to users). Review before publishing |
+| Ollama (optional, installed by the user) | Alternative way to run a language model | MIT; each model has its own license |
 | Piper (release 2023.11.14-2) | Speech synthesis engine | MIT ✓. If you move Piper to a newer release, check that release's license |
 | Piper voices | The voices themselves | **Each voice has its own license**, shown on its model card. Some forbid commercial use |
 | ffmpeg (inside the imageio-ffmpeg package) | Reads and writes video and audio | The Python wrapper is BSD-2; the PyPI wheels bundle an **ffmpeg binary under the GPL** ✓. See below |

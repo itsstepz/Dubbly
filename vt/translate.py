@@ -31,8 +31,10 @@ TRANSLATORS = {
     "nllb": "NLLB-200",
     "opus": "Opus-MT",
     "madlad": "MADLAD-400",
+    "local": N_("Нейросеть (встроенная)"),
     "llm": "Ollama (LLM)",
 }
+LLM_ENGINES = ("local", "llm")  # переводчики-нейросети: им нужна модель из списка «Модель нейросети»
 
 # Что это за модель и как влияет на компьютер (цифры примерные: зависят от системы)
 TRANSLATOR_HINTS = {
@@ -42,6 +44,8 @@ TRANSLATOR_HINTS = {
                "Редкие пары переводит через английский."),
     "madlad": N_("Крупная модель: ~3 ГБ, памяти от 4 ГБ, лучше с видеокартой. Любые языки. "
                  "Свободная лицензия."),
+    "local": N_("Переводит по смыслу, понимает сленг и обороты. Ничего не нужно устанавливать: "
+                "движок и модель (~2,5 ГБ) Dubbly скачает сам. Памяти от 6 ГБ, медленнее остальных."),
     "llm": N_("Переводит по смыслу, понимает сленг и обороты. Нужна бесплатная программа Ollama "
               "(ollama.com). Модель ~3 ГБ, памяти от 6 ГБ, медленнее остальных."),
 }
@@ -220,13 +224,14 @@ def translate_segments(
     context: str = "",
     llm_model: str = "",
     ollama_url: str = "",
+    use_gpu: bool = True,
 ) -> List[dict]:
     """Добавляет к каждому сегменту поле `tr` с переводом."""
     if src == tgt:
         for s in segments:
             s["tr"] = s["text"]
         return segments
-    if engine not in ENGINES and engine != "llm":
+    if engine not in ENGINES and engine not in LLM_ENGINES:
         raise RuntimeError(_("Неизвестный переводчик: {engine}", engine=engine))
     log(_("Перевожу ({engine}): {src} → {tgt}…", engine=engine, src=src, tgt=tgt))
     from . import terms
@@ -240,6 +245,15 @@ def translate_segments(
 
         out = llm.translate(texts, src, tgt, topic, gloss, llm_model, ollama_url,
                             cancel, progress, log, dl_hook, hints=hints)
+    elif engine == "local":
+        from . import llamacpp, llm
+
+        srv = llamacpp.start(llm_model or llm.DEFAULT_MODEL, use_gpu, endpoint, cancel, log, dl_hook)
+        try:
+            out = llm.translate(texts, src, tgt, topic, gloss, "", "", cancel, progress, log,
+                                dl_hook, hints=hints, chat=srv.chat)
+        finally:
+            srv.stop()  # освобождаем видеопамять сразу после перевода
     else:
         if gloss:
             texts = [apply_glossary(t, gloss, src) for t in texts]

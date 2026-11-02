@@ -103,17 +103,38 @@ DEFAULT_SETTINGS = {
     "keep_work": False,
     "context": "",              # «О чём видео и термины»
     "llm_model": "gemma3:4b",   # модель Ollama для переводчика «Ollama (LLM)»
+    "local_model": "gemma3:4b", # модель встроенной нейросети (llama.cpp)
     "ollama_url": "",           # адрес Ollama; пусто — http://127.0.0.1:11434
+    "device": "auto",           # ускорение: auto, nvidia, vulkan (AMD/Intel), cpu — см. DEVICES
 }
+
+# Ускорение. Распознавание и NLLB/Opus/MADLAD (CTranslate2) умеют видеокарту только NVIDIA (CUDA);
+# встроенная нейросеть (llama.cpp, Vulkan) — любую. Для AMD/Intel распознавание идёт на процессоре.
+DEVICES = ("auto", "nvidia", "vulkan", "cpu")
+
+
+def cuda_wanted(device: str) -> bool:
+    """Пробовать ли видеокарту NVIDIA (CUDA) для распознавания и NLLB/Opus/MADLAD."""
+    return device in ("auto", "nvidia")
+
+
+def vulkan_wanted(device: str) -> bool:
+    """Пробовать ли видеокарту для встроенной нейросети (llama.cpp через Vulkan)."""
+    return device != "cpu"
 
 
 def load_settings() -> dict:
     p = app_dir() / "settings.json"
     s = dict(DEFAULT_SETTINGS)
     try:
-        s.update(json.loads(p.read_text(encoding="utf-8")))
+        saved = json.loads(p.read_text(encoding="utf-8"))
+        s.update(saved)
+        if "device" not in saved and saved.get("use_gpu") is False:
+            s["device"] = "cpu"  # старые настройки: выключенный переключатель «Видеокарта NVIDIA»
     except Exception:
         pass
+    if s.get("device") not in DEVICES:
+        s["device"] = "auto"
     return s
 
 
@@ -173,26 +194,60 @@ def download_file(
     dest: Path,
     cancel: Optional[CancelToken] = None,
     on_progress: Optional[Callable[[int, int], None]] = None,
+    attempts: int = 6,
 ) -> Path:
-    """Скачивает файл потоково (через .part), поддерживает любые размеры."""
+    """Скачивает файл потоково (через .part), поддерживает любые размеры.
+
+    При обрыве связи докачивает с того же места (до attempts попыток), в том числе после
+    отмены и повторного запуска. Файл считается готовым, только если размер совпал с
+    ожидаемым: с медленного GitHub соединение рвалось посреди архива llama.cpp.
+    """
+    import time
+
     dest.parent.mkdir(parents=True, exist_ok=True)
     part = dest.with_suffix(dest.suffix + ".part")
-    req = urllib.request.Request(url, headers={"User-Agent": "Dubbly/1.0"})
-    with open_url(req, timeout=60) as r, open(part, "wb") as f:
-        total = int(r.headers.get("Content-Length") or 0)
-        done = 0
-        while True:
-            if cancel:
-                cancel.check()
-            chunk = r.read(1024 * 256)
-            if not chunk:
-                break
-            f.write(chunk)
-            done += len(chunk)
-            if on_progress:
-                on_progress(done, total)
-    os.replace(part, dest)
-    return dest
+    done = part.stat().st_size if part.exists() else 0
+    last: Optional[BaseException] = None
+    for attempt in range(attempts):
+        headers = {"User-Agent": "Dubbly/1.0"}
+        if done:
+            headers["Range"] = f"bytes={done}-"
+        req = urllib.request.Request(url, headers=headers)
+        total = 0
+        try:
+            with open_url(req, timeout=60) as r:
+                if done and getattr(r, "status", 200) != 206:
+                    done = 0  # сервер не умеет докачку — начинаем заново
+                length = int(r.headers.get("Content-Length") or 0)
+                total = done + length if length else 0
+                with open(part, "ab" if done else "wb") as f:
+                    while True:
+                        if cancel:
+                            cancel.check()
+                        chunk = r.read(1024 * 256)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        done += len(chunk)
+                        if on_progress:
+                            on_progress(done, total)
+            if total and done < total:
+                raise OSError(f"incomplete download: {done} of {total} bytes")
+            os.replace(part, dest)
+            return dest
+        except Cancelled:
+            raise
+        except urllib.error.HTTPError as e:
+            if e.code == 416 and done:  # «такого диапазона нет»: недокачанный файл устарел
+                part.unlink(missing_ok=True)
+                done = 0
+                continue
+            raise
+        except Exception as e:  # обрыв связи, тайм-аут
+            last = e
+            time.sleep(min(2 + attempt * 3, 15))
+    assert last is not None
+    raise last
 
 
 def repo_total_size(repo: str, endpoint: str = "") -> int:

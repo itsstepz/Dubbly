@@ -19,7 +19,7 @@ from .startup import installed_models, probe_gpu, voices_cache_note
 from .asr import WHISPER_HINTS, WHISPER_REPOS
 from .common import (DEFAULT_SETTINGS, CancelToken, Cancelled, load_settings, resource_path,
                      save_settings)
-from .i18n import _
+from .i18n import N_, _
 from .languages import LANGUAGES
 
 def video_filter() -> str:
@@ -99,6 +99,22 @@ class Catalog(QObject):
         threading.Thread(target=job, daemon=True).start()
 
 
+class OllamaTags(QObject):
+    """Узнаёт в фоне, какие модели уже скачаны в Ollama (если она запущена)."""
+    ready = Signal(list)
+
+    def fetch(self, url: str):
+        def job():
+            try:
+                from . import llm
+
+                tags = llm._call(url or llm.DEFAULT_URL, "/api/tags", timeout=2)
+                self.ready.emit([m["name"] for m in tags.get("models", []) if m.get("name")])
+            except Exception:
+                self.ready.emit([])
+        threading.Thread(target=job, daemon=True).start()
+
+
 def role(widget: QWidget, name: str) -> QWidget:
     """Назначает виджету роль для таблицы стилей (см. theme.py)."""
     widget.setProperty("role", name)
@@ -138,6 +154,9 @@ class MainWindow(QWidget):
         self.cat = Catalog()
         self.cat.ready.connect(self.on_catalog)
         self.cat.fetch(self.s["hf_endpoint"])
+        self.tags = OllamaTags()
+        self.tags.ready.connect(self.on_ollama_tags)
+        self._ollama_models: list = []
 
     # ------------------------------------------------------------------ размер под экран
     def _available(self):
@@ -320,7 +339,7 @@ class MainWindow(QWidget):
             self.tgt.addItem(n, c)
         self.engine = QComboBox()
         for k, v in translate.TRANSLATORS.items():
-            self.engine.addItem(v, k)
+            self.engine.addItem(_(v), k)
             self.engine.setItemData(self.engine.count() - 1,
                                     _(translate.TRANSLATOR_HINTS[k]), Qt.ToolTipRole)
         self.model = QComboBox()
@@ -349,9 +368,7 @@ class MainWindow(QWidget):
         vr.addWidget(self.del_btn)
         self.mirror = QLineEdit()
         self.mirror.setPlaceholderText(_("необязательно, например https://hf-mirror.com"))
-        self.llm_model = QLineEdit()
-        self.llm_model.setPlaceholderText(DEFAULT_SETTINGS["llm_model"])
-        self.llm_model.setToolTip(_("Название модели в Ollama. Dubbly скачает её сам при первом запуске."))
+        self.llm_model = QComboBox()  # список моделей; для Ollama можно вписать любое название
         self.context = role(QPlainTextEdit(), "input")  # обычный шрифт, как у полей ввода
         self.context.setPlaceholderText(_("Например: стрим по Minecraft, много игрового сленга.\n"
                                           "Creeper = крипер\nNether = Незер"))
@@ -367,15 +384,15 @@ class MainWindow(QWidget):
         g.addWidget(self._field(_("Язык оригинала"), self.src), 0, 0)
         g.addWidget(self._field(_("Перевести на"), self.tgt), 0, 1)
         self.engine_hint, self.model_hint = self._hint(), self._hint()
-        g.addWidget(self._field(_("Переводчик"), self.engine, self.engine_hint), 1, 0)
-        g.addWidget(self._field(_("Качество распознавания"), self.model, self.model_hint), 1, 1)
+        eng_box = QWidget()
+        eb = QVBoxLayout(eng_box)
+        eb.setContentsMargins(0, 0, 0, 0)
+        eb.setSpacing(6)
+        eb.addWidget(self.engine)
+        eb.addWidget(self.llm_model)  # «Модель нейросети»: сразу под переводчиком, только для нейросетей
+        g.addWidget(self._field(_("Переводчик"), eng_box, self.engine_hint), 1, 0, Qt.AlignTop)
+        g.addWidget(self._field(_("Качество распознавания"), self.model, self.model_hint), 1, 1, Qt.AlignTop)
         g.addWidget(self._field(_("Голос"), voice_row), 2, 0, 1, 2)
-        # зеркало и модель Ollama в одной строке; без Ollama зеркало на всю ширину (_update_hints)
-        self.trans_grid = g
-        self.mirror_row = self._field(_("Зеркало моделей"), self.mirror)
-        self.llm_row = self._field(_("Модель Ollama"), self.llm_model)
-        g.addWidget(self.mirror_row, 3, 0, 1, 2)
-        g.addWidget(self.llm_row, 3, 1)
         g.setColumnStretch(0, 1)
         g.setColumnStretch(1, 1)
         tl.addLayout(g)
@@ -408,14 +425,11 @@ class MainWindow(QWidget):
         sg.setColumnStretch(1, 1)
         sl.addLayout(sg)
         self.srt = QCheckBox(_("Сохранить субтитры (.srt)"))
-        self.gpu = QCheckBox(_("Видеокарта NVIDIA"))
-        self.gpu.setToolTip(_("При первом запуске скачает около 1 ГБ библиотек CUDA"))
         self.open_chk = QCheckBox(_("Открыть папку с видео после завершения"))
         switches = QGridLayout()
         switches.setHorizontalSpacing(28)
         switches.setVerticalSpacing(8)
         switches.addWidget(self.srt, 0, 0)
-        switches.addWidget(self.gpu, 0, 1)
         switches.addWidget(self.open_chk, 1, 0, 1, 2)
         switches.setColumnStretch(2, 1)
         sl.addLayout(switches)
@@ -460,6 +474,19 @@ class MainWindow(QWidget):
         term_row.addStretch(1)
         cl.addLayout(term_row)
         right.addWidget(ctx)
+
+        # --- редко нужные настройки: справа, чтобы слева не появлялась прокрутка
+        more, ml = self._card(_("Дополнительно"))
+        self.device = QComboBox()
+        for key, text in (("auto", _("Автоматически")), ("nvidia", _("Видеокарта NVIDIA (CUDA)")),
+                          ("vulkan", _("Видеокарта AMD или Intel (Vulkan)")), ("cpu", _("Только процессор"))):
+            self.device.addItem(text, key)
+        self.device_hint = role(QLabel(""), "hint")
+        self.device_hint.setWordWrap(True)
+        self.device.currentIndexChanged.connect(self._device_hint)
+        ml.addWidget(self._field(_("Ускорение"), self.device, self.device_hint))
+        ml.addWidget(self._field(_("Зеркало моделей"), self.mirror))
+        right.addWidget(more)
 
         # --- ход работы
         prog, pl = self._card(_("Ход работы"))
@@ -506,10 +533,10 @@ class MainWindow(QWidget):
             self.offset.setValue(int(round(int(self.s["sync_offset_ms"]) / 10)))
             self._offset_text(self.offset.value())
             self.srt.setChecked(bool(self.s["save_srt"]))
-            self.gpu.setChecked(bool(self.s["use_gpu"]))
+            self._set(self.device, self.s.get("device", "auto"))
+            self._device_hint()
             self.open_chk.setChecked(bool(self.s["open_folder"]))
             self.mirror.setText(self.s["hf_endpoint"])
-            self.llm_model.setText(self.s.get("llm_model", ""))
             self.context.setPlainText(self.s.get("context", ""))
             self._update_hints()
             self.apply_theme(self.s.get("theme", "auto"))
@@ -524,18 +551,90 @@ class MainWindow(QWidget):
             voice=self.voice.currentData() or self.s.get("voice", "auto"),
             whisper_model=self.model.currentData(), translator=self.engine.currentData(),
             orig_volume=self.vol.value(), save_srt=self.srt.isChecked(),
-            use_gpu=self.gpu.isChecked(), open_folder=self.open_chk.isChecked(),
+            device=self.device.currentData(), use_gpu=self.device.currentData() != "cpu",
+            open_folder=self.open_chk.isChecked(),
             max_speedup=self.speed.value() / 10, sync_offset_ms=self.offset.value() * 10,
             hf_endpoint=self.mirror.text().strip(),
-            llm_model=self.llm_model.text().strip() or DEFAULT_SETTINGS["llm_model"],
+            **self._model_setting(),
             context=self.context.toPlainText().strip())
 
     def _update_hints(self, *_args):
         self.engine_hint.setText(_(translate.TRANSLATOR_HINTS.get(self.engine.currentData(), "")))
-        llm = self.engine.currentData() == "llm"
-        self.llm_row.setVisible(llm)
-        self.trans_grid.addWidget(self.mirror_row, 3, 0, 1, 1 if llm else 2)
+        self._fill_models()
         self.model_hint.setText(_(WHISPER_HINTS.get(self.model.currentData(), "")))
+
+    # ------------------------------------------------------------------ модель нейросети
+    MODEL_HINTS = {
+        "gemma3:4b": N_("~2,5 ГБ. Для видеокарты от 4 ГБ."),
+        "gemma3:12b": N_("~7 ГБ. Точнее, но медленнее; для видеокарты от 12 ГБ."),
+        "qwen3:8b": N_("~5 ГБ. Для видеокарты от 8 ГБ."),
+    }
+
+    def _fill_models(self):
+        """Список моделей под выбранный переводчик-нейросеть (для остальных поле скрыто)."""
+        eng = self.engine.currentData()
+        prev = self.llm_model.property("eng")
+        if prev in translate.LLM_ENGINES and prev != eng and self.llm_model.currentText().strip():
+            # переключились на другой переводчик: запомним, что было выбрано у прежнего
+            self.s["local_model" if prev == "local" else "llm_model"] = self.llm_model.currentText().strip()
+        self.llm_model.setVisible(eng in translate.LLM_ENGINES)
+        if eng not in translate.LLM_ENGINES:
+            return
+        key = "local_model" if eng == "local" else "llm_model"
+        current = (self.llm_model.currentText().strip() if self.llm_model.property("eng") == eng
+                   else "") or self.s.get(key) or DEFAULT_SETTINGS[key]
+        if eng == "local":
+            from .llamacpp import MODELS
+            names = list(MODELS)
+        else:
+            names = list(dict.fromkeys(self._ollama_models + list(self.MODEL_HINTS)))
+            self.tags.fetch(self.s.get("ollama_url", ""))  # какие модели уже есть в Ollama
+        self.llm_model.blockSignals(True)
+        self.llm_model.clear()
+        self.llm_model.setEditable(eng == "llm")  # в Ollama можно вписать любую модель
+        for n in names:
+            self.llm_model.addItem(n)
+            tip = _(self.MODEL_HINTS[n]) if n in self.MODEL_HINTS else ""
+            if n in self._ollama_models and eng == "llm":
+                tip = (tip + " " + _("Уже скачана в Ollama.")).strip()
+            self.llm_model.setItemData(self.llm_model.count() - 1, tip, Qt.ToolTipRole)
+        if eng == "local" and current not in names:
+            current = names[0]
+        i = self.llm_model.findText(current)
+        if i >= 0:
+            self.llm_model.setCurrentIndex(i)
+        else:
+            self.llm_model.setEditText(current)
+        self.llm_model.setProperty("eng", eng)
+        self.llm_model.setToolTip(_("Модель нейросети. Скачивается сама при первом запуске.") if eng == "local"
+                                  else _("Модель в Ollama: выберите из списка или впишите название. "
+                                         "Dubbly скачает её сам при первом запуске."))
+        self.llm_model.blockSignals(False)
+
+    def on_ollama_tags(self, names: list):
+        if names != self._ollama_models:
+            self._ollama_models = names
+            if self.engine.currentData() == "llm":
+                self._fill_models()
+
+    def _model_setting(self) -> dict:
+        eng = self.engine.currentData()
+        if eng not in translate.LLM_ENGINES or self.llm_model.property("eng") != eng:
+            return {}
+        key = "local_model" if eng == "local" else "llm_model"
+        return {key: self.llm_model.currentText().strip() or DEFAULT_SETTINGS[key]}
+
+    DEVICE_HINTS = {
+        "auto": N_("NVIDIA — для всего; другая видеокарта — для встроенной нейросети; иначе процессор."),
+        "nvidia": N_("Распознавание и перевод на видеокарте. При первом запуске скачает около 1 ГБ "
+                     "библиотек CUDA."),
+        "vulkan": N_("На видеокарте работает встроенная нейросеть-переводчик. Распознавание речи — "
+                     "на процессоре (медленнее)."),
+        "cpu": N_("Всё на процессоре: работает везде, но медленнее всего."),
+    }
+
+    def _device_hint(self, *_args):
+        self.device_hint.setText(_(self.DEVICE_HINTS.get(self.device.currentData(), "")))
 
     def _offset_text(self, v: int):
         ms = v * 10
@@ -765,9 +864,10 @@ class MainWindow(QWidget):
             whisper_model=self.s["whisper_model"], voice=self.s["voice"],
             orig_volume=self.s["orig_volume"] / 100.0, save_srt=self.s["save_srt"],
             hf_endpoint=self.s["hf_endpoint"], translator=self.s["translator"],
-            use_gpu=self.s["use_gpu"], max_speedup=self.s["max_speedup"],
+            use_gpu=self.s["device"] != "cpu", device=self.s["device"], max_speedup=self.s["max_speedup"],
             sync_offset=self.s["sync_offset_ms"] / 1000.0, ui_lang=i18n.current(),
-            context=self.s["context"], llm_model=self.s["llm_model"],
+            context=self.s["context"],
+            llm_model=self.s["local_model"] if self.s["translator"] == "local" else self.s["llm_model"],
             ollama_url=self.s.get("ollama_url", ""))
         self.logbox.clear()
         self.bar.setRange(0, 1000)

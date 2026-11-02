@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 from . import asr, cuda_libs, speak, terms, translate, tts
-from .common import CancelToken, Cancelled, app_dir
+from .common import CancelToken, Cancelled, app_dir, cuda_wanted, vulkan_wanted
 from .ffmpeg_utils import decode_to_pcm, probe, run_ffmpeg
 from .languages import name_of
 from .i18n import _
@@ -45,7 +45,8 @@ class Options:
     keep_work: bool = False
     hf_endpoint: str = ""
     translator: str = "nllb"
-    use_gpu: bool = True
+    use_gpu: bool = True            # устарело: оставлено для совместимости, решает device
+    device: str = "auto"           # ускорение: auto, nvidia, vulkan (AMD/Intel), cpu
     context: str = ""              # «О чём видео и термины»: тема + строки «слово = перевод»
     llm_model: str = ""            # модель Ollama для переводчика llm (пусто — llm.DEFAULT_MODEL)
     ollama_url: str = ""           # адрес Ollama (пусто — llm.DEFAULT_URL)
@@ -219,7 +220,7 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
         # 2-3. текст и перевод (кэшируются, чтобы продолжить после сбоя)
         meta = {"src": opts.src_lang, "tgt": opts.tgt_lang, "model": opts.whisper_model, "translator": opts.translator, "split": 4,
                 "size": src_path.stat().st_size, "context": opts.context.strip(),
-                "llm": opts.llm_model if opts.translator == "llm" else "",
+                "llm": opts.llm_model if opts.translator in translate.LLM_ENGINES else "",
                 "terms": terms.signature(opts.tgt_lang) + "|" + terms.DB_VERSION}
         cache = work / "segments.json"
         data = None
@@ -232,7 +233,7 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
                 data = None
 
         if data is None:
-            cuda_libs.prepare(opts.use_gpu, cancel, log, dl_hook("asr", "gpu"))
+            cuda_libs.prepare(opts.use_gpu and cuda_wanted(opts.device), cancel, log, dl_hook("asr", "gpu"))
             topic, gloss = translate.parse_context(opts.context)
             segments, lang = asr.transcribe(
                 str(audio), duration, opts.whisper_model, opts.src_lang, opts.hf_endpoint,
@@ -245,7 +246,7 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
                 segments, lang, opts.tgt_lang, opts.hf_endpoint, cancel,
                 stage("translate", _("Перевожу текст…")), log, dl_hook("translate"),
                 engine=opts.translator, context=opts.context, llm_model=opts.llm_model,
-                ollama_url=opts.ollama_url)
+                ollama_url=opts.ollama_url, use_gpu=opts.use_gpu and vulkan_wanted(opts.device))
             data = {"meta": meta, "lang": lang, "segments": segments, "done": True}
             cache.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
         else:
