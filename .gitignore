@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+*.spec
+.vt_work_*/
+installer_out/
+# Пользовательские шрифты: лицензия многих запрещает распространение
+fonts/*
+!fonts/README.txt
