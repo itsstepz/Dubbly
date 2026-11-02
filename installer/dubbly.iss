@@ -1,6 +1,6 @@
 ; Inno Setup script for Dubbly. Keep this file ASCII-only.
 #ifndef AppVersion
-  #define AppVersion "1.0.0"
+  #define AppVersion "1.1.0"
 #endif
 #define AppName "Dubbly"
 #define AppExe "Dubbly.exe"

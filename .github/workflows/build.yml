@@ -48,7 +48,9 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          & "${{ steps.iscc.outputs.path }}" "/DAppVersion=1.0.${{ github.run_number }}" installer\dubbly.iss
+          # номер версии берём из программы (vt/__init__.py), к нему добавляем номер сборки
+          $ver = python -c "import re; print(re.search(r'__version__ = .([0-9.]+).', open('vt/__init__.py', encoding='utf-8').read()).group(1))"
+          & "${{ steps.iscc.outputs.path }}" "/DAppVersion=$ver.${{ github.run_number }}" installer\dubbly.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed with code $LASTEXITCODE" }
       - name: Upload installer
         if: steps.inno.outcome == 'success'

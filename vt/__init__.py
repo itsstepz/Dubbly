@@ -8,7 +8,7 @@ for _name in ("stdout", "stderr"):
     if getattr(_sys, _name, None) is None:
         setattr(_sys, _name, open(_os.devnull, "w", encoding="utf-8"))
 
-__version__ = "1.0"  # показывается как «Build v. 1.0»
+__version__ = "1.1"  # показывается как «Build v. 1.1»; сборка на GitHub берёт номер отсюда
 
 # Обычная загрузка вместо Xet (стабильнее через прокси и зеркала) и разумные таймауты.
 _os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
