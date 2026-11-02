@@ -145,6 +145,10 @@ class MainWindow(QWidget):
         self.font_family = font_family
         self._loading = False
         self._scroll = None
+        # список моделей Ollama нужен уже при загрузке настроек (если сохранён переводчик Ollama)
+        self._ollama_models: list = []
+        self.tags = OllamaTags()
+        self.tags.ready.connect(self.on_ollama_tags)
 
         self._outer = QVBoxLayout(self)
         self._outer.setContentsMargins(0, 0, 0, 0)
@@ -154,9 +158,6 @@ class MainWindow(QWidget):
         self.cat = Catalog()
         self.cat.ready.connect(self.on_catalog)
         self.cat.fetch(self.s["hf_endpoint"])
-        self.tags = OllamaTags()
-        self.tags.ready.connect(self.on_ollama_tags)
-        self._ollama_models: list = []
 
     # ------------------------------------------------------------------ размер под экран
     def _available(self):
