@@ -1,0 +1,83 @@
+# Видеомонтаж и стриминг: английский → русский
+# «слово = перевод» — переводить так всегда.
+# «слово ~ перевод» — слово многозначное (в обычной речи значит другое): только подсказка нейросети.
+# Подготовлено машинно, стоит проверить человеку из темы.
+
+# --- монтаж
+timeline ~ таймлайн
+footage = футаж
+b-roll = би-ролл
+jump cut = джамп-кат
+cut ~ склейка
+transition ~ переход
+color grading = цветокоррекция
+color correction = цветокоррекция
+lut = LUT
+keyframe = ключевой кадр
+keyframes = ключевые кадры
+render ~ рендер
+rendering ~ рендеринг
+export ~ экспорт
+frame rate = частота кадров
+frames per second = кадров в секунду
+resolution ~ разрешение
+aspect ratio = соотношение сторон
+bitrate = битрейт
+codec = кодек
+green screen = хромакей
+chroma key = хромакей
+motion graphics = моушн-дизайн
+lower third = плашка
+thumbnail = превью
+thumbnails = превью
+voiceover = закадровый голос
+voice-over = закадровый голос
+sound effects = звуковые эффекты
+sfx = SFX
+premiere pro = Premiere Pro
+after effects = After Effects
+davinci resolve = DaVinci Resolve
+final cut = Final Cut
+obs = OBS
+
+# --- съёмка
+shutter speed = выдержка
+aperture = диафрагма
+iso = ISO
+depth of field = глубина резкости
+focal length = фокусное расстояние
+lens ~ объектив
+gimbal = стабилизатор
+tripod = штатив
+lighting ~ освещение
+key light = рисующий свет
+fill light = заполняющий свет
+backlight ~ контровой свет
+white balance = баланс белого
+
+# --- YouTube и стримы
+streamer = стример
+streaming ~ стриминг
+stream ~ стрим
+livestream = прямая трансляция
+live stream = прямая трансляция
+vod = запись трансляции
+chat ~ чат
+donation ~ донат
+donations ~ донаты
+subscriber = подписчик
+subscribers = подписчики
+subscribe ~ подпишись
+like and subscribe = ставьте лайк и подписывайтесь
+views ~ просмотры
+algorithm ~ алгоритм
+monetization = монетизация
+sponsor ~ спонсор
+sponsored ~ спонсорский
+content creator = автор контента
+youtuber = ютубер
+shorts ~ шортсы
+clip ~ клип
+highlights ~ лучшие моменты
+overlay ~ оверлей
+webcam = веб-камера

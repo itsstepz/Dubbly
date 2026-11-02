@@ -113,8 +113,8 @@ def system_prompt(src: str, tgt: str, topic: str, glossary: Sequence[Tuple[str, 
         lines.append("Glossary (always use exactly these translations):")
         lines += [f"- {a} → {b if b else a}" for a, b in glossary]
     if hints:
-        lines.append("Suggested translations of recurring terms (use them when they fit the meaning, "
-                     "keep names unchanged):")
+        lines.append("Terms of this field: when one of these words is used in this meaning, translate it "
+                     "exactly like this; when it is an ordinary word, translate it normally:")
         lines += [f"- {a} → {b}" for a, b in hints]
     lines.append('Answer with JSON: {"translations": [{"n": 1, "starts_with": "<first three words of '
                  'original line 1, copied exactly>", "translation": "..."}, ...]}: exactly one item per '
@@ -132,9 +132,27 @@ def _words(text: str) -> List[str]:
 
 
 def _anchor_ok(line: str, start: str) -> bool:
-    """Модель повторила начало строки? Так видно, что она не съехала на соседнюю реплику."""
+    """Модель повторила начало строки? Так видно, что она не съехала на соседнюю реплику.
+
+    Маленькие модели часто пишут это начало уже в переводе: тогда сверять не с чем
+    (сдвиг поймают проверки длины и мусора), иначе правильный ответ уходил бы на повтор.
+    """
     a, b = _words(line)[:3], _words(start)[:3]
-    return not a or a == b[:len(a)]
+    if not a or not b:
+        return True
+    if _script(b[0]) != _script(a[0]):
+        return True   # начало написано на другом алфавите — это перевод, а не копия
+    return a == b[:len(a)]
+
+
+def _script(word: str) -> str:
+    """Грубо: латиница, кириллица или что-то другое (по первой букве)."""
+    ch = word[:1]
+    if "a" <= ch.lower() <= "z":
+        return "latin"
+    if "Ѐ" <= ch <= "ӿ":
+        return "cyrillic"
+    return "other"
 
 
 _JUNK = re.compile(r"[{}\[\]]|\"\s*:|previous|next_line|translation|starts_with", re.I)
@@ -331,7 +349,8 @@ def _chunks(texts: List[str]) -> List[Tuple[int, int]]:
 def translate(texts: List[str], src: str, tgt: str, topic: str,
               glossary: Sequence[Tuple[str, str]], model: str, url: str,
               cancel: CancelToken, progress: Callable[[float], None], log: Log,
-              hook: Hook = None, auto_context: bool = True) -> List[str]:
+              hook: Hook = None, auto_context: bool = True,
+              hints: Sequence[Tuple[str, str]] = ()) -> List[str]:
     url = url or DEFAULT_URL
     model = model or DEFAULT_MODEL
     check_server(url)
@@ -349,7 +368,7 @@ def translate(texts: List[str], src: str, tgt: str, topic: str,
             log(_("Не удалось определить тему ({err}), перевожу без неё.", err=e))
             a_topic, a_terms = "", []
         # то, что пользователь написал сам, важнее найденного
-        mine = {a.lower() for a, _b in glossary}
+        mine = {a.lower() for a, _b in list(glossary) + list(hints)}
         a_terms = [(a, b) for a, b in a_terms if a.lower() not in mine]
         if a_topic and not topic.strip():
             topic = a_topic
@@ -361,7 +380,15 @@ def translate(texts: List[str], src: str, tgt: str, topic: str,
             log(_("Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле "
                   "«О чём видео и термины»):")
                 + "\n" + "\n".join(f"{a} = {b}" for a, b in a_terms))
-    system = system_prompt(src, tgt, topic, glossary)
+    from .terms import term_regex
+
+    def system_for(lines: Sequence[str]) -> str:
+        # в задание идут только термины, которые есть в этих строках: длинный список
+        # замедляет маленькую модель и сбивает её
+        text = " ".join(lines)
+        pick = lambda pairs: [(a, b) for a, b in pairs if term_regex(a, src).search(text)]
+        return system_prompt(src, tgt, topic, pick(glossary), pick(hints))
+
     out: List[str] = []
 
     def context(i: int) -> Tuple[List[Tuple[str, str]], int]:
@@ -372,6 +399,7 @@ def translate(texts: List[str], src: str, tgt: str, topic: str,
         cancel.check()
         chunk = texts[i:j]
         before, _lo = context(i)
+        system = system_for(chunk)
         res = _ask(url, model, system, chunk, before, texts[j:j + CONTEXT_AFTER], 0.3)
         for k, tr in enumerate(res):
             cancel.check()
@@ -380,8 +408,9 @@ def translate(texts: List[str], src: str, tgt: str, topic: str,
                 # строку модель перевела неверно (сдвиг, мусор) — переводим её отдельно
                 ctx, _lo = context(idx)
                 nxt = texts[idx + 1:idx + 1 + CONTEXT_AFTER]
-                tr = (_ask(url, model, system, [texts[idx]], ctx, nxt, 0.0)[0]
-                      or _ask(url, model, system, [texts[idx]], ctx, nxt, 0.5)[0])
+                one = system_for([texts[idx]])
+                tr = (_ask(url, model, one, [texts[idx]], ctx, nxt, 0.0)[0]
+                      or _ask(url, model, one, [texts[idx]], ctx, nxt, 0.5)[0])
                 if tr is None:
                     log(_("Реплика {n} не переведена, озвучки у неё не будет: {line}",
                           n=idx + 1, line=texts[idx][:80]))

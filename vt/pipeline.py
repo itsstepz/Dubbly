@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from . import asr, cuda_libs, translate, tts
+from . import asr, cuda_libs, speak, terms, translate, tts
 from .common import CancelToken, Cancelled, app_dir
 from .ffmpeg_utils import decode_to_pcm, probe, run_ffmpeg
 from .languages import name_of
@@ -219,7 +219,8 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
         # 2-3. текст и перевод (кэшируются, чтобы продолжить после сбоя)
         meta = {"src": opts.src_lang, "tgt": opts.tgt_lang, "model": opts.whisper_model, "translator": opts.translator, "split": 4,
                 "size": src_path.stat().st_size, "context": opts.context.strip(),
-                "llm": opts.llm_model if opts.translator == "llm" else ""}
+                "llm": opts.llm_model if opts.translator == "llm" else "",
+                "terms": terms.signature(opts.tgt_lang) + "|" + terms.DB_VERSION}
         cache = work / "segments.json"
         data = None
         if cache.exists():
@@ -266,7 +267,8 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
                 voice_id = ""
             for i, s in enumerate(segments):
                 cancel.check()
-                text = s["tr"].strip()
+                # для голоса латиница переписывается русскими буквами и т. п. (субтитры не меняются)
+                text = speak.for_speech(s["tr"].strip(), opts.tgt_lang)
                 if text:
                     # имя файла зависит от текста и голоса: после смены перевода или голоса
                     # старые файлы не подставятся по ошибке

@@ -1,0 +1,132 @@
+# Игры: английский → русский
+# «слово = перевод» — переводить так всегда.
+# «слово ~ перевод» — слово многозначное (в обычной речи значит другое): только подсказка нейросети.
+# Подготовлено машинно, стоит проверить человеку из темы.
+
+# --- общее
+gameplay = геймплей
+gamer = геймер
+gamers = геймеры
+speedrun = спидран
+speedrunner = спидраннер
+let's play = летсплей
+playthrough = прохождение
+walkthrough = прохождение
+open world = открытый мир
+sandbox ~ песочница
+roguelike = рогалик
+roguelite = рогалик
+mmo = MMO
+mmorpg = MMORPG
+rpg = RPG
+fps = FPS
+battle royale = королевская битва
+moba = MOBA
+co-op = кооператив
+multiplayer = мультиплеер
+singleplayer = одиночная игра
+single-player = одиночная игра
+pvp = PvP
+pve = PvE
+indie game = инди-игра
+dlc = DLC
+patch notes = патчноут
+patch ~ патч
+update ~ обновление
+early access = ранний доступ
+beta ~ бета
+
+# --- механики
+respawn = респаун
+spawn ~ спавн
+spawn point = точка возрождения
+checkpoint = чекпоинт
+save point = точка сохранения
+hitbox = хитбокс
+hp = HP
+health bar = полоска здоровья
+mana ~ мана
+cooldown = кулдаун
+buff ~ бафф
+nerf ~ нерф
+debuff = дебафф
+loot ~ лут
+drop rate = шанс выпадения
+drop ~ дроп
+grind ~ гринд
+grinding ~ гринд
+farm ~ фарм
+farming ~ фарм
+xp = опыт
+exp = опыт
+level up = повышение уровня
+skill tree = дерево навыков
+crafting = крафт
+craft ~ скрафтить
+inventory = инвентарь
+quest ~ квест
+side quest = побочный квест
+main quest = основной квест
+boss fight = битва с боссом
+boss ~ босс
+mob ~ моб
+mobs ~ мобы
+npc = NPC
+aggro = агро
+tank ~ танк
+healer = хилер
+dps = DPS
+crit ~ крит
+critical hit = критический удар
+combo ~ комбо
+parry ~ парирование
+dodge ~ уворот
+stealth ~ стелс
+headshot = хедшот
+camping ~ кемперство
+camper ~ кемпер
+noob = нуб
+newbie ~ новичок
+tryhard = трайхард
+smurf ~ смурф
+rage quit = рейдж-квит
+gg = GG
+op ~ имба
+overpowered = имба
+meta ~ мета
+build ~ билд
+loadout = снаряжение
+skin ~ скин
+skins ~ скины
+lag ~ лаг
+ping ~ пинг
+fps drop = просадка FPS
+frame rate = частота кадров
+glitch ~ баг
+bug ~ баг
+exploit ~ эксплойт
+cheese ~ абуз
+mod ~ мод
+mods ~ моды
+modding = моддинг
+server ~ сервер
+lobby ~ лобби
+matchmaking = матчмейкинг
+ranked ~ рейтинговый
+casual ~ казуальный
+esports = киберспорт
+e-sports = киберспорт
+
+# --- Minecraft
+creeper = крипер
+creepers = криперы
+enderman = эндермен
+ender dragon = Эндер-дракон
+nether = Незер
+the end ~ Энд
+redstone = редстоун
+netherite = незерит
+villager = житель
+villagers = жители
+mob farm = ферма мобов
+biome = биом

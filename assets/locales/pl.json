@@ -171,5 +171,18 @@
  "Читаю весь текст, чтобы понять тему и термины…": "Czytam cały tekst, aby zrozumieć temat i terminy…",
  "Не удалось определить тему ({err}), перевожу без неё.": "Nie udało się ustalić tematu ({err}), tłumaczę bez niego.",
  "Тема видео: {topic}": "Temat filmu: {topic}",
- "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Szkic terminów (nie są stosowane same: sprawdź je i w razie potrzeby skopiuj do pola «O czym jest film i terminy»):"
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Szkic terminów (nie są stosowane same: sprawdź je i w razie potrzeby skopiuj do pola «O czym jest film i terminy»):",
+ "Запомнить термины": "Zapamiętaj terminy",
+ "Добавить строки «слово = перевод» из поля в личный словарь: они будут применяться ко всем следующим видео": "Dodaj wiersze «słowo = tłumaczenie» z pola do osobistego słownika: będą stosowane do wszystkich kolejnych filmów",
+ "Мой словарь": "Mój słownik",
+ "Открыть личный словарь в Блокноте": "Otwórz osobisty słownik w Notatniku",
+ "Запомнено терминов: {n}. Они будут применяться ко всем следующим видео с переводом на этот язык.": "Zapamiętano terminów: {n}. Będą stosowane do wszystkich kolejnych filmów tłumaczonych na ten język.",
+ "В поле нет строк вида «слово = перевод».": "W polu nie ma wierszy «słowo = tłumaczenie».",
+ "Музыка и звукозапись": "Muzyka i nagrywanie dźwięku",
+ "Игры": "Gry",
+ "Программирование и компьютеры": "Programowanie i komputery",
+ "Видеомонтаж и стриминг": "Montaż wideo i streaming",
+ "# Мой словарь терминов. По строке на термин: слово = перевод\n# Строки с # не учитываются. Пример:\n# Creeper = крипер\n": "# Mój słownik terminów. Jeden termin w wierszu: słowo = tłumaczenie\n# Wiersze z # są pomijane. Przykład:\n# Creeper = creeper\n",
+ "Мой словарь: в видео нашлось терминов: {n}": "Mój słownik: terminów znalezionych w filmie: {n}",
+ "Тема по словарю: {name}. Терминов из словаря: {n}": "Temat według słownika: {name}. Terminów ze słownika: {n}"
 }

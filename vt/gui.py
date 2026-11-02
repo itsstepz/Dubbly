@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QPlainTextEdit, QProgressBar, QPushButton, QScrollArea, QSlider, QVBoxLayout, QWidget,
 )
 
-from . import __version__, fonts, i18n, pipeline, preview, runner, theme, translate, tts, voices
+from . import __version__, fonts, i18n, pipeline, preview, runner, terms, theme, translate, tts, voices
 from .splash import Splash
 from .startup import installed_models, probe_gpu, voices_cache_note
 from .asr import WHISPER_HINTS, WHISPER_REPOS
@@ -446,6 +446,19 @@ class MainWindow(QWidget):
         ctx, cl = self._card(_("О чём видео и термины (необязательно)"))
         cl.addWidget(self.context)
         cl.addWidget(context_hint)
+        term_row = QHBoxLayout()
+        term_row.setSpacing(8)
+        b_rem = QPushButton(_("Запомнить термины"))
+        b_rem.setToolTip(_("Добавить строки «слово = перевод» из поля в личный словарь: "
+                           "они будут применяться ко всем следующим видео"))
+        b_rem.clicked.connect(self.remember_terms)
+        b_my = QPushButton(_("Мой словарь"))
+        b_my.setToolTip(_("Открыть личный словарь в Блокноте"))
+        b_my.clicked.connect(self.open_my_terms)
+        term_row.addWidget(b_rem)
+        term_row.addWidget(b_my)
+        term_row.addStretch(1)
+        cl.addLayout(term_row)
         right.addWidget(ctx)
 
         # --- ход работы
@@ -599,6 +612,33 @@ class MainWindow(QWidget):
 
     def _update_voice_buttons(self, *_args):
         self.del_btn.setEnabled(voices.is_custom(self.voice.currentData()))
+
+    # ------------------------------------------------------------------ личный словарь
+    def remember_terms(self):
+        _topic, pairs = translate.parse_context(self.context.toPlainText())
+        tgt = self.tgt.currentData()
+        if not pairs:
+            QMessageBox.information(self, _("Мой словарь"),
+                                    _("В поле нет строк вида «слово = перевод»."))
+            return
+        try:
+            n = terms.remember(tgt, pairs)
+        except OSError as e:
+            QMessageBox.warning(self, _("Мой словарь"), str(e))
+            return
+        QMessageBox.information(self, _("Мой словарь"),
+                                _("Запомнено терминов: {n}. Они будут применяться ко всем следующим видео "
+                                  "с переводом на этот язык.", n=n))
+
+    def open_my_terms(self):
+        try:
+            path = terms.ensure_my_file(self.tgt.currentData())
+            if os.name == "nt":
+                os.startfile(str(path))  # type: ignore[attr-defined]
+            else:
+                subprocess.Popen(["xdg-open", str(path)])
+        except OSError as e:
+            QMessageBox.warning(self, _("Мой словарь"), str(e))
 
     def add_voice(self):
         f, _flt = QFileDialog.getOpenFileName(

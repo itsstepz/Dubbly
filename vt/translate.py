@@ -197,10 +197,13 @@ def parse_context(text: str) -> Tuple[str, List[Tuple[str, str]]]:
     return " ".join(topic), gloss
 
 
-def apply_glossary(text: str, gloss: List[Tuple[str, str]]) -> str:
-    """Заменяет термины в исходном тексте их переводом (целые слова, без учёта регистра)."""
+def apply_glossary(text: str, gloss: List[Tuple[str, str]], lang: str = "en") -> str:
+    """Заменяет термины в исходном тексте их переводом (целые слова без учёта регистра;
+    для английского — и множественное число: «Creepers» по строке «Creeper»)."""
+    from .terms import term_regex
+
     for src, dst in sorted(gloss, key=lambda g: -len(g[0])):
-        text = re.sub(r"(?<!\w)" + re.escape(src) + r"(?!\w)", lambda _m, d=dst: d, text, flags=re.I)
+        text = term_regex(src, lang).sub(lambda _m, d=dst: d, text)
     return text
 
 
@@ -226,16 +229,20 @@ def translate_segments(
     if engine not in ENGINES and engine != "llm":
         raise RuntimeError(_("Неизвестный переводчик: {engine}", engine=engine))
     log(_("Перевожу ({engine}): {src} → {tgt}…", engine=engine, src=src, tgt=tgt))
-    topic, gloss = parse_context(context)
+    from . import terms
+
+    topic, field = parse_context(context)
     texts = [s["text"] for s in segments]
+    # строгий словарь: поле + личный словарь + однозначные термины базы; подсказки — многозначные
+    gloss, hints, _domain = terms.collect(texts, src, tgt, field, log)
     if engine == "llm":
         from . import llm
 
         out = llm.translate(texts, src, tgt, topic, gloss, llm_model, ollama_url,
-                            cancel, progress, log, dl_hook)
+                            cancel, progress, log, dl_hook, hints=hints)
     else:
         if gloss:
-            texts = [apply_glossary(t, gloss) for t in texts]
+            texts = [apply_glossary(t, gloss, src) for t in texts]
         out = ENGINES[engine](texts, src, tgt, endpoint, cancel, progress, log, dl_hook)
     for s, t in zip(segments, out):
         s["tr"] = t

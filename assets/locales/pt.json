@@ -171,5 +171,18 @@
  "Читаю весь текст, чтобы понять тему и термины…": "Lendo todo o texto para entender o tema e os termos…",
  "Не удалось определить тему ({err}), перевожу без неё.": "Não foi possível determinar o tema ({err}), traduzindo sem ele.",
  "Тема видео: {topic}": "Tema do vídeo: {topic}",
- "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Rascunho de termos (não são aplicados sozinhos: verifique-os e, se quiser, copie-os para o campo «Sobre o que é o vídeo e termos»):"
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Rascunho de termos (não são aplicados sozinhos: verifique-os e, se quiser, copie-os para o campo «Sobre o que é o vídeo e termos»):",
+ "Запомнить термины": "Memorizar termos",
+ "Добавить строки «слово = перевод» из поля в личный словарь: они будут применяться ко всем следующим видео": "Adicionar as linhas «palavra = tradução» do campo ao dicionário pessoal: serão usadas em todos os próximos vídeos",
+ "Мой словарь": "Meu dicionário",
+ "Открыть личный словарь в Блокноте": "Abrir o dicionário pessoal no Bloco de Notas",
+ "Запомнено терминов: {n}. Они будут применяться ко всем следующим видео с переводом на этот язык.": "Termos memorizados: {n}. Serão usados em todos os próximos vídeos traduzidos para este idioma.",
+ "В поле нет строк вида «слово = перевод».": "O campo não tem linhas «palavra = tradução».",
+ "Музыка и звукозапись": "Música e gravação de áudio",
+ "Игры": "Jogos",
+ "Программирование и компьютеры": "Programação e computadores",
+ "Видеомонтаж и стриминг": "Edição de vídeo e streaming",
+ "# Мой словарь терминов. По строке на термин: слово = перевод\n# Строки с # не учитываются. Пример:\n# Creeper = крипер\n": "# Meu dicionário de termos. Um termo por linha: palavra = tradução\n# Linhas com # são ignoradas. Exemplo:\n# Creeper = creeper\n",
+ "Мой словарь: в видео нашлось терминов: {n}": "Meu dicionário: termos encontrados no vídeo: {n}",
+ "Тема по словарю: {name}. Терминов из словаря: {n}": "Tema pelo dicionário: {name}. Termos do dicionário: {n}"
 }

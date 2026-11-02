@@ -171,5 +171,18 @@
  "Читаю весь текст, чтобы понять тему и термины…": "Konuyu ve terimleri anlamak için metnin tamamını okuyorum…",
  "Не удалось определить тему ({err}), перевожу без неё.": "Konu belirlenemedi ({err}), konu olmadan çeviriyorum.",
  "Тема видео: {topic}": "Videonun konusu: {topic}",
- "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Terim taslağı (kendiliğinden uygulanmaz: kontrol edin ve isterseniz «Video ne hakkında ve terimler» alanına kopyalayın):"
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Terim taslağı (kendiliğinden uygulanmaz: kontrol edin ve isterseniz «Video ne hakkında ve terimler» alanına kopyalayın):",
+ "Запомнить термины": "Terimleri hatırla",
+ "Добавить строки «слово = перевод» из поля в личный словарь: они будут применяться ко всем следующим видео": "Alandaki «kelime = çeviri» satırlarını kişisel sözlüğe ekle: sonraki tüm videolarda kullanılacak",
+ "Мой словарь": "Sözlüğüm",
+ "Открыть личный словарь в Блокноте": "Kişisel sözlüğü Not Defteri'nde aç",
+ "Запомнено терминов: {n}. Они будут применяться ко всем следующим видео с переводом на этот язык.": "Hatırlanan terim: {n}. Bu dile çevrilen sonraki tüm videolarda kullanılacak.",
+ "В поле нет строк вида «слово = перевод».": "Alanda «kelime = çeviri» satırı yok.",
+ "Музыка и звукозапись": "Müzik ve ses kaydı",
+ "Игры": "Oyunlar",
+ "Программирование и компьютеры": "Programlama ve bilgisayarlar",
+ "Видеомонтаж и стриминг": "Video kurgu ve yayıncılık",
+ "# Мой словарь терминов. По строке на термин: слово = перевод\n# Строки с # не учитываются. Пример:\n# Creeper = крипер\n": "# Terim sözlüğüm. Her satırda bir terim: kelime = çeviri\n# # ile başlayan satırlar dikkate alınmaz. Örnek:\n# Creeper = creeper\n",
+ "Мой словарь: в видео нашлось терминов: {n}": "Sözlüğüm: videoda bulunan terim: {n}",
+ "Тема по словарю: {name}. Терминов из словаря: {n}": "Sözlüğe göre konu: {name}. Sözlükten terim: {n}"
 }

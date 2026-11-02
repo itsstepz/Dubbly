@@ -171,5 +171,18 @@
  "Читаю весь текст, чтобы понять тему и термины…": "Lecture de tout le texte pour comprendre le sujet et les termes…",
  "Не удалось определить тему ({err}), перевожу без неё.": "Impossible de déterminer le sujet ({err}), traduction sans lui.",
  "Тема видео: {topic}": "Sujet de la vidéo : {topic}",
- "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Brouillon de termes (non appliqués automatiquement : vérifiez-les et, si vous voulez, copiez-les dans le champ «Sujet de la vidéo et termes») :"
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Brouillon de termes (non appliqués automatiquement : vérifiez-les et, si vous voulez, copiez-les dans le champ «Sujet de la vidéo et termes») :",
+ "Запомнить термины": "Mémoriser les termes",
+ "Добавить строки «слово = перевод» из поля в личный словарь: они будут применяться ко всем следующим видео": "Ajouter les lignes «mot = traduction» du champ à votre dictionnaire personnel : elles serviront pour toutes les vidéos suivantes",
+ "Мой словарь": "Mon dictionnaire",
+ "Открыть личный словарь в Блокноте": "Ouvrir le dictionnaire personnel dans le Bloc-notes",
+ "Запомнено терминов: {n}. Они будут применяться ко всем следующим видео с переводом на этот язык.": "Termes mémorisés : {n}. Ils serviront pour toutes les vidéos suivantes traduites dans cette langue.",
+ "В поле нет строк вида «слово = перевод».": "Le champ ne contient aucune ligne «mot = traduction».",
+ "Музыка и звукозапись": "Musique et prise de son",
+ "Игры": "Jeux",
+ "Программирование и компьютеры": "Programmation et informatique",
+ "Видеомонтаж и стриминг": "Montage vidéo et streaming",
+ "# Мой словарь терминов. По строке на термин: слово = перевод\n# Строки с # не учитываются. Пример:\n# Creeper = крипер\n": "# Mon dictionnaire de termes. Un terme par ligne : mot = traduction\n# Les lignes avec # sont ignorées. Exemple :\n# Creeper = creeper\n",
+ "Мой словарь: в видео нашлось терминов: {n}": "Mon dictionnaire : termes trouvés dans la vidéo : {n}",
+ "Тема по словарю: {name}. Терминов из словаря: {n}": "Sujet d'après le dictionnaire : {name}. Termes du dictionnaire : {n}"
 }

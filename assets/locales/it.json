@@ -171,5 +171,18 @@
  "Читаю весь текст, чтобы понять тему и термины…": "Leggo tutto il testo per capire l'argomento e i termini…",
  "Не удалось определить тему ({err}), перевожу без неё.": "Impossibile determinare l'argomento ({err}), traduco senza.",
  "Тема видео: {topic}": "Argomento del video: {topic}",
- "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Bozza di termini (non vengono applicati da soli: controllali e, se vuoi, copiali nel campo «Di cosa parla il video e termini»):"
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Bozza di termini (non vengono applicati da soli: controllali e, se vuoi, copiali nel campo «Di cosa parla il video e termini»):",
+ "Запомнить термины": "Memorizza termini",
+ "Добавить строки «слово = перевод» из поля в личный словарь: они будут применяться ко всем следующим видео": "Aggiungi le righe «parola = traduzione» del campo al dizionario personale: verranno usate per tutti i video successivi",
+ "Мой словарь": "Il mio dizionario",
+ "Открыть личный словарь в Блокноте": "Apri il dizionario personale nel Blocco note",
+ "Запомнено терминов: {n}. Они будут применяться ко всем следующим видео с переводом на этот язык.": "Termini memorizzati: {n}. Verranno usati per tutti i video successivi tradotti in questa lingua.",
+ "В поле нет строк вида «слово = перевод».": "Il campo non contiene righe «parola = traduzione».",
+ "Музыка и звукозапись": "Musica e registrazione audio",
+ "Игры": "Giochi",
+ "Программирование и компьютеры": "Programmazione e computer",
+ "Видеомонтаж и стриминг": "Montaggio video e streaming",
+ "# Мой словарь терминов. По строке на термин: слово = перевод\n# Строки с # не учитываются. Пример:\n# Creeper = крипер\n": "# Il mio dizionario dei termini. Un termine per riga: parola = traduzione\n# Le righe con # vengono ignorate. Esempio:\n# Creeper = creeper\n",
+ "Мой словарь: в видео нашлось терминов: {n}": "Il mio dizionario: termini trovati nel video: {n}",
+ "Тема по словарю: {name}. Терминов из словаря: {n}": "Argomento secondo il dizionario: {name}. Termini dal dizionario: {n}"
 }

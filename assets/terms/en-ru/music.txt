@@ -1,0 +1,209 @@
+# Музыка и звукозапись: английский → русский
+# «слово = перевод» — переводить так всегда.
+# «слово ~ перевод» — слово многозначное (в обычной речи значит другое): только подсказка нейросети.
+# Подготовлено машинно, стоит проверить человеку из темы.
+
+# --- структура трека
+call and response = колл-энд-респонс
+call ~ колл
+response ~ респонс
+drop ~ дроп
+build-up = билдап
+buildup = билдап
+breakdown ~ брейкдаун
+intro ~ интро
+outro = аутро
+verse ~ куплет
+chorus ~ припев
+hook ~ хук
+bridge ~ бридж
+fill ~ филл
+drum fill = сбивка
+turnaround ~ переход
+switch-up = свитч
+switch up = свитч
+riser = райзер
+downlifter = даунлифтер
+impact ~ импакт
+arrangement ~ аранжировка
+bar ~ такт
+bars ~ такты
+four bar loop = четырёхтактовая петля
+eight bars = восемь тактов
+sixteen bars = шестнадцать тактов
+16 bars = 16 тактов
+8 bars = 8 тактов
+loop ~ луп
+quarter note = четвертная нота
+quarter notes = четвертные ноты
+eighth note = восьмая нота
+eighth notes = восьмые ноты
+sixteenth note = шестнадцатая нота
+triplet = триоль
+off-beat = офбит
+offbeat = офбит
+downbeat = сильная доля
+groove ~ грув
+swing ~ свинг
+tempo ~ темп
+bpm = BPM
+
+# --- гармония
+minor key = минорная тональность
+major key = мажорная тональность
+key ~ тональность
+scale ~ лад
+d minor = ре минор
+c minor = до минор
+c sharp minor = до-диез минор
+chord progression = последовательность аккордов
+interval ~ интервал
+octave = октава
+pitch ~ высота тона
+pitch up ~ повышение тона
+melody ~ мелодия
+
+# --- барабаны
+kick drum = бочка
+kick ~ бочка
+snare drum = малый барабан
+snare = малый барабан
+clap ~ клэп
+hi-hat = хай-хэт
+hihat = хай-хэт
+hats ~ хэты
+cymbal = тарелка
+crash ~ крэш
+ride ~ райд
+tom ~ том
+percussion = перкуссия
+drum roll = барабанная дробь
+drumstick = барабанная палочка
+breakbeat = брейкбит
+
+# --- звук и синтез
+sound design = саунд-дизайн
+sound designing = саунд-дизайн
+synth = синт
+synthesizer = синтезатор
+wavetable = вейвтейбл
+oscillator = осциллятор
+sine wave = синусоида
+square wave = меандр
+saw wave = пила
+sawtooth = пила
+triangle wave = треугольная волна
+noise ~ шум
+white noise = белый шум
+sub bass = саб-бас
+subbass = саб-бас
+sub ~ саб
+bass ~ бас
+wobble = вобл
+growl ~ грол
+reese = риз
+lead ~ лид
+pad ~ пэд
+pluck ~ плак
+stab ~ стэб
+vocal chop = вокальный чоп
+vocal sample = вокальный сэмпл
+sample ~ сэмпл
+samples ~ сэмплы
+one-shot = ваншот
+granular = гранулярный
+glitch ~ глитч
+glitching ~ глитчит
+transient = транзиент
+envelope ~ огибающая
+attack ~ атака
+release ~ релиз
+sustain ~ сустейн
+decay ~ спад
+lfo = LFO
+fm = FM
+unison ~ унисон
+detune = расстройка
+harmonics = гармоники
+upper harmonics = верхние гармоники
+low end = низы
+top end = верха
+high end = верха
+mids ~ середина
+frequency ~ частота
+
+# --- обработка и сведение
+distortion = дисторшн
+saturation = сатурация
+overdrive = овердрайв
+bitcrusher = биткрашер
+compressor = компрессор
+compression = компрессия
+sidechain = сайдчейн
+limiter = лимитер
+eq = эквалайзер
+equalizer = эквалайзер
+high-pass = фильтр высоких частот
+low-pass = фильтр низких частот
+reverb = реверберация
+delay ~ дилей
+chorus effect = хорус
+phaser = фэйзер
+flanger = фленджер
+filter ~ фильтр
+automation ~ автоматизация
+layering = наслоение
+layer ~ слой
+mixing ~ сведение
+mixdown = микс
+mastering = мастеринг
+gain ~ гейн
+headroom = запас по уровню
+stereo width = ширина стерео
+mono ~ моно
+fade ~ фейд
+fade out ~ затухание
+pan ~ панорама
+
+# --- программы и работа в DAW
+daw = DAW
+midi = MIDI
+midi clip = MIDI-клип
+midi clips = MIDI-клипы
+midi channel = MIDI-канал
+midi channels = MIDI-каналы
+clip ~ клип
+channel ~ канал
+track ~ трек
+project file = файл проекта
+plugin = плагин
+plugins = плагины
+third-party plugins = сторонние плагины
+preset = пресет
+freeze ~ заморозить
+frozen ~ заморожены
+consolidate ~ склеить
+bounce ~ сбросить в аудио
+render ~ рендер
+piano roll = пиано-ролл
+arrangement view = окно аранжировки
+reference track = референс
+reference ~ референс
+
+# --- жанры и сцена
+dubstep = дабстеп
+riddim = риддим
+drum and bass = драм-н-бэйс
+dnb = DnB
+trap ~ трэп
+house ~ хаус
+techno = техно
+edm = EDM
+producer ~ продюсер
+producing ~ продюсирование
+vip = VIP
+remix ~ ремикс
+bootleg ~ бутлег
+banger ~ бэнгер
+headliner = хедлайнер
+touring artist = гастролирующий артист

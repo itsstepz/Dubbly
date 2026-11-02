@@ -171,5 +171,18 @@
  "Читаю весь текст, чтобы понять тему и термины…": "Reading the whole text to understand the topic and terms…",
  "Не удалось определить тему ({err}), перевожу без неё.": "Could not determine the topic ({err}), translating without it.",
  "Тема видео: {topic}": "Video topic: {topic}",
- "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Draft of terms (not applied automatically: check them and, if you like, copy them into the «What the video is about, and terms» field):"
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Draft of terms (not applied automatically: check them and, if you like, copy them into the «What the video is about, and terms» field):",
+ "Запомнить термины": "Remember terms",
+ "Добавить строки «слово = перевод» из поля в личный словарь: они будут применяться ко всем следующим видео": "Add the «word = translation» lines from the field to your personal dictionary: they will be used for all future videos",
+ "Мой словарь": "My dictionary",
+ "Открыть личный словарь в Блокноте": "Open your personal dictionary in Notepad",
+ "Запомнено терминов: {n}. Они будут применяться ко всем следующим видео с переводом на этот язык.": "Terms remembered: {n}. They will be used for all future videos translated into this language.",
+ "В поле нет строк вида «слово = перевод».": "The field has no «word = translation» lines.",
+ "Музыка и звукозапись": "Music and audio production",
+ "Игры": "Games",
+ "Программирование и компьютеры": "Programming and computers",
+ "Видеомонтаж и стриминг": "Video editing and streaming",
+ "# Мой словарь терминов. По строке на термин: слово = перевод\n# Строки с # не учитываются. Пример:\n# Creeper = крипер\n": "# My dictionary of terms. One term per line: word = translation\n# Lines starting with # are ignored. Example:\n# Creeper = Creeper\n",
+ "Мой словарь: в видео нашлось терминов: {n}": "My dictionary: terms found in the video: {n}",
+ "Тема по словарю: {name}. Терминов из словаря: {n}": "Topic by dictionary: {name}. Terms from the dictionary: {n}"
 }

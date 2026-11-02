@@ -1,0 +1,105 @@
+# Программирование и компьютеры: английский → русский
+# «слово = перевод» — переводить так всегда.
+# «слово ~ перевод» — слово многозначное (в обычной речи значит другое): только подсказка нейросети.
+# Подготовлено машинно, стоит проверить человеку из темы.
+
+# --- код
+source code = исходный код
+codebase = кодовая база
+function ~ функция
+variable ~ переменная
+loop ~ цикл
+for loop = цикл for
+while loop = цикл while
+array ~ массив
+string ~ строка
+integer ~ целое число
+boolean = булево значение
+object ~ объект
+class ~ класс
+method ~ метод
+library ~ библиотека
+framework = фреймворк
+dependency ~ зависимость
+dependencies ~ зависимости
+api = API
+endpoint = эндпоинт
+backend = бэкенд
+back end = бэкенд
+frontend = фронтенд
+front end = фронтенд
+full stack = фулстек
+database = база данных
+query ~ запрос
+compiler = компилятор
+interpreter ~ интерпретатор
+runtime ~ среда выполнения
+debugger = отладчик
+debugging = отладка
+debug ~ отладить
+breakpoint = точка останова
+stack trace = стек вызовов
+exception ~ исключение
+bug ~ баг
+bugs ~ баги
+refactoring = рефакторинг
+refactor ~ отрефакторить
+legacy code = легаси-код
+unit test = юнит-тест
+unit tests = юнит-тесты
+test coverage = покрытие тестами
+deploy ~ задеплоить
+deployment = деплой
+production ~ прод
+staging ~ стейджинг
+pull request = пул-реквест
+merge request = мерж-реквест
+code review = код-ревью
+commit ~ коммит
+push ~ запушить
+merge ~ смержить
+branch ~ ветка
+repository = репозиторий
+repo = репозиторий
+fork ~ форк
+open source = открытый исходный код
+git = Git
+github = GitHub
+docker = Docker
+container ~ контейнер
+virtual machine = виртуальная машина
+cloud ~ облако
+server ~ сервер
+localhost = localhost
+terminal ~ терминал
+command line = командная строка
+script ~ скрипт
+syntax = синтаксис
+ide = IDE
+regex = регулярное выражение
+json = JSON
+machine learning = машинное обучение
+neural network = нейросеть
+large language model = большая языковая модель
+llm = LLM
+prompt ~ промпт
+
+# --- железо
+cpu = процессор
+gpu = видеокарта
+graphics card = видеокарта
+ram = оперативная память
+vram = видеопамять
+motherboard = материнская плата
+ssd = SSD
+hard drive = жёсткий диск
+power supply = блок питания
+overclocking = разгон
+overclock ~ разогнать
+bottleneck ~ узкое место
+benchmark ~ бенчмарк
+driver ~ драйвер
+drivers ~ драйверы
+firmware = прошивка
+bios = BIOS
+operating system = операционная система

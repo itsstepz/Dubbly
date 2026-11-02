@@ -171,5 +171,18 @@
  "Читаю весь текст, чтобы понять тему и термины…": "Lese den ganzen Text, um Thema und Begriffe zu verstehen…",
  "Не удалось определить тему ({err}), перевожу без неё.": "Das Thema konnte nicht bestimmt werden ({err}), übersetze ohne Thema.",
  "Тема видео: {topic}": "Thema des Videos: {topic}",
- "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Entwurf der Begriffe (werden nicht automatisch angewendet: prüfen Sie sie und kopieren Sie sie bei Bedarf in das Feld «Worum es im Video geht und Begriffe»):"
+ "Черновик терминов (сами не применяются: проверьте и при желании скопируйте в поле «О чём видео и термины»):": "Entwurf der Begriffe (werden nicht automatisch angewendet: prüfen Sie sie und kopieren Sie sie bei Bedarf in das Feld «Worum es im Video geht und Begriffe»):",
+ "Запомнить термины": "Begriffe merken",
+ "Добавить строки «слово = перевод» из поля в личный словарь: они будут применяться ко всем следующим видео": "Die Zeilen «Wort = Übersetzung» aus dem Feld ins persönliche Wörterbuch übernehmen: sie gelten für alle weiteren Videos",
+ "Мой словарь": "Mein Wörterbuch",
+ "Открыть личный словарь в Блокноте": "Persönliches Wörterbuch im Editor öffnen",
+ "Запомнено терминов: {n}. Они будут применяться ко всем следующим видео с переводом на этот язык.": "Gemerkte Begriffe: {n}. Sie gelten für alle weiteren Videos mit Übersetzung in diese Sprache.",
+ "В поле нет строк вида «слово = перевод».": "Das Feld enthält keine Zeilen «Wort = Übersetzung».",
+ "Музыка и звукозапись": "Musik und Tonaufnahme",
+ "Игры": "Spiele",
+ "Программирование и компьютеры": "Programmierung und Computer",
+ "Видеомонтаж и стриминг": "Videoschnitt und Streaming",
+ "# Мой словарь терминов. По строке на термин: слово = перевод\n# Строки с # не учитываются. Пример:\n# Creeper = крипер\n": "# Mein Begriffswörterbuch. Ein Begriff pro Zeile: Wort = Übersetzung\n# Zeilen mit # werden ignoriert. Beispiel:\n# Creeper = Creeper\n",
+ "Мой словарь: в видео нашлось терминов: {n}": "Mein Wörterbuch: im Video gefundene Begriffe: {n}",
+ "Тема по словарю: {name}. Терминов из словаря: {n}": "Thema laut Wörterbuch: {name}. Begriffe aus dem Wörterbuch: {n}"
 }
