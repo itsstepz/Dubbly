@@ -214,5 +214,11 @@
  "Папка для моделей": "Model klasörü",
  "Переношу скачанные модели… Это может занять несколько минут.": "İndirilen modeller taşınıyor… Bu birkaç dakika sürebilir.",
  "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Zaten indirilenler ({size} GB) yeni klasöre taşınsın mı? Hayır derseniz gerekli modeller bir sonraki çeviride oraya yeniden indirilir.",
- "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Her şey taşınamadı: {err}. Eksik modeller gerektiğinde yeniden indirilecek."
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Her şey taşınamadı: {err}. Eksik modeller gerektiğinde yeniden indirilecek.",
+ "Оставить музыку и эффекты": "Müziği ve efektleri koru",
+ "Убирает из оригинала только голос: музыка и эффекты звучат в полную громкость, как в настоящем дубляже. Перевод идёт дольше (на видеокарте примерно на половину длины видео). Один раз скачает модель ~67 МБ.": "Orijinalden yalnızca sesi kaldırır: müzik ve efektler gerçek bir dublajdaki gibi tam seste kalır. Çeviri daha uzun sürer (ekran kartında yaklaşık video süresinin yarısı). ~67 MB'lık bir modeli bir kez indirir.",
+ "Отделяю голос от музыки…": "Ses müzikten ayrılıyor…",
+ "Отделяю голос от музыки и эффектов (видеокарта)…": "Ses müzikten ve efektlerden ayrılıyor (ekran kartı)…",
+ "Отделяю голос от музыки и эффектов (процессор, это небыстро)…": "Ses müzikten ve efektlerden ayrılıyor (işlemci, bu yavaştır)…",
+ "Скачиваю модель отделения голоса от музыки (один раз)…": "Ses ayırma modeli indiriliyor (bir kez)…"
 }

@@ -215,6 +215,7 @@ DEFAULT_SETTINGS = {
     "ollama_url": "",           # адрес Ollama; пусто — http://127.0.0.1:11434
     "device": "auto",           # ускорение: auto, nvidia, vulkan (AMD/Intel), cpu — см. DEVICES
     "data_dir": "",             # папка для моделей; пусто — папка данных программы (см. store_dir)
+    "separate_voice": False,    # «Оставить музыку и эффекты»: убрать из оригинала только голос
 }
 
 # Ускорение. Распознавание и NLLB/Opus/MADLAD (CTranslate2) умеют видеокарту только NVIDIA (CUDA);

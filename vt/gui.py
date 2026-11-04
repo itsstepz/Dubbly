@@ -432,10 +432,17 @@ class MainWindow(QWidget):
         sl.addLayout(sg)
         self.srt = QCheckBox(_("Сохранить субтитры (.srt)"))
         self.open_chk = QCheckBox(_("Открыть папку с видео после завершения"))
+        self.sep_chk = QCheckBox(_("Оставить музыку и эффекты"))
+        self.sep_chk.setToolTip(_("Убирает из оригинала только голос: музыка и эффекты звучат в полную "
+                                  "громкость, как в настоящем дубляже. Перевод идёт дольше (на видеокарте "
+                                  "примерно на половину длины видео). Один раз скачает модель ~67 МБ."))
+        # с отделённым голосом фон звучит целиком, ползунок громкости оригинала не нужен
+        self.sep_chk.toggled.connect(lambda on: self.vol.setEnabled(not on))
         switches = QGridLayout()
         switches.setHorizontalSpacing(28)
         switches.setVerticalSpacing(8)
         switches.addWidget(self.srt, 0, 0)
+        switches.addWidget(self.sep_chk, 0, 1)
         switches.addWidget(self.open_chk, 1, 0, 1, 2)
         switches.setColumnStretch(2, 1)
         sl.addLayout(switches)
@@ -555,6 +562,8 @@ class MainWindow(QWidget):
             self._set(self.device, self.s.get("device", "auto"))
             self._device_hint()
             self.open_chk.setChecked(bool(self.s["open_folder"]))
+            self.sep_chk.setChecked(bool(self.s.get("separate_voice", False)))
+            self.vol.setEnabled(not self.sep_chk.isChecked())
             self.mirror.setText(self.s["hf_endpoint"])
             self.store_edit.setText(str(common.store_dir()))
             self.store_edit.setToolTip(self.store_edit.text())  # путь длинный — целиком в подсказке
@@ -573,7 +582,7 @@ class MainWindow(QWidget):
             whisper_model=self.model.currentData(), translator=self.engine.currentData(),
             orig_volume=self.vol.value(), save_srt=self.srt.isChecked(),
             device=self.device.currentData(), use_gpu=self.device.currentData() != "cpu",
-            open_folder=self.open_chk.isChecked(),
+            open_folder=self.open_chk.isChecked(), separate_voice=self.sep_chk.isChecked(),
             max_speedup=self.speed.value() / 10, sync_offset_ms=self.offset.value() * 10,
             hf_endpoint=self.mirror.text().strip(),
             **self._model_setting(),
@@ -953,6 +962,7 @@ class MainWindow(QWidget):
             orig_volume=self.s["orig_volume"] / 100.0, save_srt=self.s["save_srt"],
             hf_endpoint=self.s["hf_endpoint"], translator=self.s["translator"],
             use_gpu=self.s["device"] != "cpu", device=self.s["device"], max_speedup=self.s["max_speedup"],
+            separate_voice=self.s["separate_voice"],
             sync_offset=self.s["sync_offset_ms"] / 1000.0, ui_lang=i18n.current(),
             context=self.s["context"],
             llm_model=self.s["local_model"] if self.s["translator"] == "local" else self.s["llm_model"],

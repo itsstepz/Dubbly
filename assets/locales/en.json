@@ -214,5 +214,11 @@
  "Папка для моделей": "Models folder",
  "Переношу скачанные модели… Это может занять несколько минут.": "Moving the downloaded models… This may take a few minutes.",
  "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Move what is already downloaded ({size} GB) to the new folder? If not, the needed models will be downloaded there again on the next translation.",
- "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Could not move everything: {err}. Missing models will be downloaded again when needed."
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Could not move everything: {err}. Missing models will be downloaded again when needed.",
+ "Оставить музыку и эффекты": "Keep music and effects",
+ "Убирает из оригинала только голос: музыка и эффекты звучат в полную громкость, как в настоящем дубляже. Перевод идёт дольше (на видеокарте примерно на половину длины видео). Один раз скачает модель ~67 МБ.": "Removes only the voice from the original: music and effects stay at full volume, like in real dubbing. Translation takes longer (on a graphics card about half the video length). Downloads a ~67 MB model once.",
+ "Отделяю голос от музыки…": "Separating the voice from the music…",
+ "Отделяю голос от музыки и эффектов (видеокарта)…": "Separating the voice from music and effects (graphics card)…",
+ "Отделяю голос от музыки и эффектов (процессор, это небыстро)…": "Separating the voice from music and effects (processor, this is slow)…",
+ "Скачиваю модель отделения голоса от музыки (один раз)…": "Downloading the voice separation model (once)…"
 }

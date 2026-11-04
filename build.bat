@@ -7,7 +7,7 @@ call .venv\Scripts\activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt pyinstaller || goto fail
 pyinstaller --noconfirm --windowed --name Dubbly --icon assets\icon.ico --add-data "assets;assets" ^
-  --collect-all faster_whisper --collect-all ctranslate2 ^
+  --collect-all faster_whisper --collect-all ctranslate2 --collect-binaries onnxruntime ^
   --collect-all imageio_ffmpeg --collect-data certifi ^
   --exclude-module tkinter --exclude-module matplotlib --exclude-module pandas ^
   --exclude-module scipy --exclude-module IPython --exclude-module pytest ^

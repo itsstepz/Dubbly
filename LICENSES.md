@@ -29,7 +29,8 @@ The project owner has not chosen a license for Dubbly's source code yet. Until a
 | PySide6 (Qt) | The program window | LGPL-3.0 (alternatively GPL or a commercial license) |
 | sentencepiece | Tokenizing text for translation | Apache 2.0 |
 | huggingface_hub | Downloads models | Apache 2.0 |
-| onnxruntime | Used for voice activity detection | MIT |
+| onnxruntime (DirectML build, `onnxruntime-directml`) | Voice activity detection; voice/music separation on any graphics card | MIT |
+| Kim_Vocal_2 (MDX-Net model from the Ultimate Vocal Remover community), mirror `nomadkaraoke/public_uvr_models` | Separates the voice from music ("Оставить музыку и эффекты"). Downloaded on first use, not bundled | **The model card states no license.** UVR itself is MIT. Check before publishing |
 | NumPy | Audio arrays | BSD-3 |
 | certifi | Certificates for secure downloads | MPL-2.0 |
 | tqdm | Progress bars in a library | MPL-2.0 / MIT |

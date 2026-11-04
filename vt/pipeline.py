@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from . import asr, cuda_libs, speak, terms, translate, tts
+from . import asr, cuda_libs, separate, speak, terms, translate, tts
 from .common import CancelToken, Cancelled, cuda_wanted, store_dir, vulkan_wanted
 from .ffmpeg_utils import decode_to_pcm, probe, run_ffmpeg
 from .languages import name_of
@@ -20,12 +20,13 @@ DL_MARK = "\x01"  # метка в начале текста прогресса: 
 
 # доли общего прогресса
 STAGES = {
-    "extract": (0.00, 0.04),
-    "asr": (0.04, 0.42),
-    "translate": (0.42, 0.52),
-    "tts": (0.52, 0.84),
-    "dub": (0.84, 0.88),
-    "mux": (0.88, 1.00),
+    "extract": (0.00, 0.03),
+    "asr": (0.03, 0.36),
+    "translate": (0.36, 0.48),
+    "tts": (0.48, 0.70),
+    "separate": (0.70, 0.88),   # отделение голоса от музыки (если включено; иначе пропускается)
+    "dub": (0.88, 0.91),
+    "mux": (0.91, 1.00),
 }
 
 
@@ -50,6 +51,8 @@ class Options:
     context: str = ""              # «О чём видео и термины»: тема + строки «слово = перевод»
     llm_model: str = ""            # модель Ollama для переводчика llm (пусто — llm.DEFAULT_MODEL)
     ollama_url: str = ""           # адрес Ollama (пусто — llm.DEFAULT_URL)
+    separate_voice: bool = False   # убрать из оригинала только голос, музыку и эффекты оставить
+    bg_volume: float = 1.0         # громкость фона (музыки) без голоса, если separate_voice
 
 
 Progress = Callable[[float, str], None]
@@ -145,9 +148,20 @@ def build_dub_track(items: List[dict], out_wav: Path, total: float,
 
 def mux(video: str, dub_wav: Path, out: str, has_audio: bool, has_video: bool,
         orig_volume: float, duration: float, cancel: CancelToken,
-        progress: Callable[[float], None]) -> None:
+        progress: Callable[[float], None], background: Optional[Path] = None,
+        bg_volume: float = 1.0) -> None:
+    """Собирает видео. background — фон без голоса (separate.py): тогда под озвучкой он,
+    а не приглушённый оригинал целиком."""
     args = ["-i", video, "-i", str(dub_wav)]
-    if has_audio and orig_volume > 0.001:
+    if background is not None:
+        args += ["-i", str(background)]
+        fmt = "aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo"
+        flt = (f"[2:a]{fmt},volume={bg_volume:.3f}[bg];"
+               f"[1:a]{fmt}[dub];"
+               f"[bg][dub]amix=inputs=2:duration=first:dropout_transition=0,"
+               f"volume=2,alimiter=limit=0.95[aout]")
+        args += ["-filter_complex", flt, "-map", "[aout]"]
+    elif has_audio and orig_volume > 0.001:
         # Без параметра amix=normalize (он есть только в ffmpeg 7.1+): amix сам делит
         # уровень на число входов, поэтому возвращаем его через volume=2, а выбросы
         # срезаем ограничителем. Оба входа приводим к одному формату явно.
@@ -166,6 +180,30 @@ def mux(video: str, dub_wav: Path, out: str, has_audio: bool, has_video: bool,
         args += ["-movflags", "+faststart"]
     args += [out]
     run_ffmpeg(args, cancel, duration, progress)
+
+
+def _background(opts: Options, work: Path, duration: float, cancel: CancelToken, stage, log: Log,
+                dl_hook) -> Path:
+    """Фон без голоса (кэшируется в папке работы: после отмены заново не считается)."""
+    bg = work / "background.wav"
+    if bg.exists() and bg.stat().st_size > 1000:
+        return bg
+    model = separate.ensure_model(opts.hf_endpoint, cancel, log, dl_hook("separate"))
+    raw = work / "mix44.f32"
+    text = _("Отделяю голос от музыки…")
+    run_ffmpeg(["-i", opts.input_path, "-map", "0:a:0", "-vn", "-ac", "2", "-ar", str(separate.SR),
+                "-f", "f32le", "-c:a", "pcm_f32le", str(raw)], cancel, duration,
+               lambda f: stage("separate", text)(f * 0.05))
+    gpu = opts.use_gpu and vulkan_wanted(opts.device)  # DirectML, как и Vulkan, — любая видеокарта
+    on_gpu = separate.providers(gpu)[0] == "DmlExecutionProvider"
+    log(_("Отделяю голос от музыки и эффектов (видеокарта)…") if on_gpu
+        else _("Отделяю голос от музыки и эффектов (процессор, это небыстро)…"))
+    part = work / "background.part.wav"
+    separate.separate(raw, raw.stat().st_size // 8, part, model, cancel,
+                      lambda f: stage("separate", text)(0.05 + f * 0.95), gpu=gpu)
+    part.replace(bg)
+    raw.unlink(missing_ok=True)
+    return bg
 
 
 def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str:
@@ -285,6 +323,11 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
         finally:
             engine.close()
 
+        # 4½. фон без голоса: музыка и эффекты остаются, вырезается только речь
+        background = None
+        if opts.separate_voice and has_audio:
+            background = _background(opts, work, duration, cancel, stage, log, dl_hook)
+
         # 5. дорожка озвучки
         dub = work / "dub.wav"
         build_dub_track(items, dub, duration, opts.max_speedup, cancel,
@@ -296,7 +339,8 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
             write_srt(segments, "text", out_path.with_suffix(f".{data['lang']}.srt"))
         log(_("Собираю итоговое видео (изображение не перекодируется)…"))
         mux(opts.input_path, dub, str(out_path), has_audio, has_video,
-            opts.orig_volume, duration, cancel, stage("mux", _("Собираю видео…")))
+            opts.orig_volume, duration, cancel, stage("mux", _("Собираю видео…")),
+            background=background, bg_volume=opts.bg_volume)
         progress(1.0, _("Готово"))
         log(_("Готово: {path}", path=out_path))
         if not opts.keep_work:

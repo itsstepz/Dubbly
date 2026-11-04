@@ -72,4 +72,11 @@ exit /b 1
 rem Upgrading pip is optional and its errors are hidden; only the libraries matter
 ".venv\Scripts\python.exe" -m pip install --upgrade pip >nul 2>&1
 ".venv\Scripts\python.exe" -m pip install -r requirements.txt
+if errorlevel 1 exit /b 1
+rem onnxruntime with DirectML: separates voice from music on any graphics card (NVIDIA, AMD, Intel).
+rem It replaces the plain onnxruntime (same module name), so remove that first; if the DirectML
+rem package cannot be installed, put the plain one back - then separation just runs on the processor.
+".venv\Scripts\python.exe" -m pip uninstall -y onnxruntime >nul 2>&1
+".venv\Scripts\python.exe" -m pip install onnxruntime-directml==1.23.0
+if errorlevel 1 ".venv\Scripts\python.exe" -m pip install onnxruntime
 exit /b %errorlevel%

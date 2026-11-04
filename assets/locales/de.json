@@ -214,5 +214,11 @@
  "Папка для моделей": "Modellordner",
  "Переношу скачанные модели… Это может занять несколько минут.": "Verschiebe die heruntergeladenen Modelle… Das kann einige Minuten dauern.",
  "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Bereits Heruntergeladenes ({size} GB) in den neuen Ordner verschieben? Wenn nicht, werden die nötigen Modelle bei der nächsten Übersetzung dort neu heruntergeladen.",
- "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Nicht alles konnte verschoben werden: {err}. Fehlende Modelle werden bei Bedarf neu heruntergeladen."
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Nicht alles konnte verschoben werden: {err}. Fehlende Modelle werden bei Bedarf neu heruntergeladen.",
+ "Оставить музыку и эффекты": "Musik und Effekte behalten",
+ "Убирает из оригинала только голос: музыка и эффекты звучат в полную громкость, как в настоящем дубляже. Перевод идёт дольше (на видеокарте примерно на половину длины видео). Один раз скачает модель ~67 МБ.": "Entfernt aus dem Original nur die Stimme: Musik und Effekte bleiben in voller Lautstärke, wie bei einer echten Synchronisation. Die Übersetzung dauert länger (auf einer Grafikkarte etwa die halbe Videolänge). Lädt einmalig ein Modell von ~67 MB herunter.",
+ "Отделяю голос от музыки…": "Trenne die Stimme von der Musik…",
+ "Отделяю голос от музыки и эффектов (видеокарта)…": "Trenne die Stimme von Musik und Effekten (Grafikkarte)…",
+ "Отделяю голос от музыки и эффектов (процессор, это небыстро)…": "Trenne die Stimme von Musik und Effekten (Prozessor, das dauert)…",
+ "Скачиваю модель отделения голоса от музыки (один раз)…": "Lade das Modell zur Stimmtrennung herunter (einmalig)…"
 }
