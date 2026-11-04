@@ -316,6 +316,9 @@ class MainWindow(QWidget):
         grid.setVerticalSpacing(9)
         self.in_edit = QLineEdit()
         self.in_edit.setPlaceholderText(_("Перетащите видео сюда или нажмите «Обзор»"))
+        # Поле само не принимает перетаскивание: иначе Qt вставляет адрес файла в уже написанный текст
+        # и строка превращается в кашу. Брошенный файл ловит окно (dropEvent) и заменяет путь целиком.
+        self.in_edit.setAcceptDrops(False)
         b_in = QPushButton(_("Обзор…"))
         b_in.clicked.connect(self.pick_input)
         self.out_edit = QLineEdit()
@@ -811,9 +814,11 @@ class MainWindow(QWidget):
             e.acceptProposedAction()
 
     def dropEvent(self, e):
-        urls = e.mimeData().urls()
-        if urls:
-            self.in_edit.setText(urls[0].toLocalFile())
+        # бросили несколько файлов — берём первый (несколько видео по очереди программа пока не переводит)
+        files = [os.path.normpath(u.toLocalFile()) for u in e.mimeData().urls() if u.isLocalFile()]
+        if files:
+            self.in_edit.setText(files[0])
+            e.acceptProposedAction()
 
     # ------------------------------------------------------------------ прослушивание голоса
     def preview_voice(self):
