@@ -20,6 +20,12 @@ jobs:
           # onnxruntime with DirectML (voice/music separation on any GPU) replaces the plain one
           pip uninstall -y onnxruntime
           pip install onnxruntime-directml==1.23.0
+      - name: Run tests
+        # No models, GPU or internet needed; a failing test stops the build (no broken installer)
+        env:
+          QT_QPA_PLATFORM: offscreen
+          PYTHONIOENCODING: utf-8
+        run: python -m unittest discover -s tests -v
       - name: Build
         run: >
           pyinstaller --noconfirm --windowed --name Dubbly
