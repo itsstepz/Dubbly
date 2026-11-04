@@ -3,6 +3,7 @@ name: Build Windows exe
 on:
   workflow_dispatch:
   push:
+    branches: [main]   # every push to main: tests + installer (artifact), so problems show up at once
     tags: ["v*"]
 
 jobs:
