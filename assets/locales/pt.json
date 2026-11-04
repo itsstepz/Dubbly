@@ -206,5 +206,13 @@
  "Только процессор": "Somente processador",
  "Ускорение": "Aceleração",
  "llama.cpp ответил ошибкой: {err}": "O llama.cpp retornou um erro: {err}",
- "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modelo no Ollama: os já baixados no Ollama e os recomendados. O Dubbly baixa o escolhido sozinho na primeira execução."
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modelo no Ollama: os já baixados no Ollama e os recomendados. O Dubbly baixa o escolhido sozinho na primeira execução.",
+ "В пути есть русские или другие не латинские буквы. Часть библиотек (Piper, переводчики) не открывает такие файлы на Windows. Выберите папку с путём только из латинских букв, например F:\\Dubbly.": "O caminho contém letras não latinas. Algumas bibliotecas (Piper, tradutores) não abrem esses arquivos no Windows. Escolha uma pasta cujo caminho tenha só letras latinas, por exemplo F:\\Dubbly.",
+ "В эту папку нельзя записывать. Выберите другую (например, на диске D: или F:).": "Não é possível gravar nesta pasta. Escolha outra (por exemplo na unidade D: ou F:).",
+ "Изменить…": "Alterar…",
+ "Где хранить скачанные модели, голоса и движки (несколько гигабайт). Можно выбрать другой диск.": "Onde guardar os modelos, vozes e motores baixados (vários gigabytes). Você pode escolher outra unidade.",
+ "Папка для моделей": "Pasta dos modelos",
+ "Переношу скачанные модели… Это может занять несколько минут.": "Movendo os modelos baixados… Isso pode levar alguns minutos.",
+ "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Mover o que já foi baixado ({size} GB) para a nova pasta? Se não, os modelos necessários serão baixados lá de novo na próxima tradução.",
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Não foi possível mover tudo: {err}. Os modelos que faltarem serão baixados de novo quando necessário."
 }

@@ -206,5 +206,13 @@
  "Только процессор": "Solo processore",
  "Ускорение": "Accelerazione",
  "llama.cpp ответил ошибкой: {err}": "llama.cpp ha restituito un errore: {err}",
- "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modello in Ollama: quelli già in Ollama e quelli consigliati. Dubbly scarica da solo quello scelto al primo avvio."
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modello in Ollama: quelli già in Ollama e quelli consigliati. Dubbly scarica da solo quello scelto al primo avvio.",
+ "В пути есть русские или другие не латинские буквы. Часть библиотек (Piper, переводчики) не открывает такие файлы на Windows. Выберите папку с путём только из латинских букв, например F:\\Dubbly.": "Il percorso contiene lettere non latine. Alcune librerie (Piper, traduttori) non aprono questi file su Windows. Scegli una cartella il cui percorso abbia solo lettere latine, per esempio F:\\Dubbly.",
+ "В эту папку нельзя записывать. Выберите другую (например, на диске D: или F:).": "In questa cartella non si può scrivere. Scegline un'altra (per esempio sull'unità D: o F:).",
+ "Изменить…": "Cambia…",
+ "Где хранить скачанные модели, голоса и движки (несколько гигабайт). Можно выбрать другой диск.": "Dove tenere i modelli, le voci e i motori scaricati (diversi gigabyte). Puoi scegliere un'altra unità.",
+ "Папка для моделей": "Cartella dei modelli",
+ "Переношу скачанные модели… Это может занять несколько минут.": "Sposto i modelli scaricati… Può richiedere alcuni minuti.",
+ "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Spostare quanto già scaricato ({size} GB) nella nuova cartella? Altrimenti i modelli necessari verranno riscaricati lì alla prossima traduzione.",
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Impossibile spostare tutto: {err}. I modelli mancanti verranno riscaricati quando servono."
 }

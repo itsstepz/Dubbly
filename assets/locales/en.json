@@ -206,5 +206,13 @@
  "Только процессор": "Processor only",
  "Ускорение": "Acceleration",
  "llama.cpp ответил ошибкой: {err}": "llama.cpp returned an error: {err}",
- "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Model in Ollama: those already in Ollama and recommended ones. Dubbly downloads the chosen one by itself on the first run."
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Model in Ollama: those already in Ollama and recommended ones. Dubbly downloads the chosen one by itself on the first run.",
+ "В пути есть русские или другие не латинские буквы. Часть библиотек (Piper, переводчики) не открывает такие файлы на Windows. Выберите папку с путём только из латинских букв, например F:\\Dubbly.": "The path contains non-Latin letters. Some libraries (Piper, translators) cannot open such files on Windows. Choose a folder whose path uses only Latin letters, for example F:\\Dubbly.",
+ "В эту папку нельзя записывать. Выберите другую (например, на диске D: или F:).": "This folder is not writable. Choose another one (for example on drive D: or F:).",
+ "Изменить…": "Change…",
+ "Где хранить скачанные модели, голоса и движки (несколько гигабайт). Можно выбрать другой диск.": "Where to keep the downloaded models, voices and engines (several gigabytes). You can choose another drive.",
+ "Папка для моделей": "Models folder",
+ "Переношу скачанные модели… Это может занять несколько минут.": "Moving the downloaded models… This may take a few minutes.",
+ "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Move what is already downloaded ({size} GB) to the new folder? If not, the needed models will be downloaded there again on the next translation.",
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Could not move everything: {err}. Missing models will be downloaded again when needed."
 }

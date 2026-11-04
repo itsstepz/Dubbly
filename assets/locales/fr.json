@@ -206,5 +206,13 @@
  "Только процессор": "Processeur uniquement",
  "Ускорение": "Accélération",
  "llama.cpp ответил ошибкой: {err}": "llama.cpp a renvoyé une erreur : {err}",
- "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modèle dans Ollama : ceux déjà dans Ollama et ceux recommandés. Dubbly télécharge lui-même le modèle choisi au premier lancement."
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modèle dans Ollama : ceux déjà dans Ollama et ceux recommandés. Dubbly télécharge lui-même le modèle choisi au premier lancement.",
+ "В пути есть русские или другие не латинские буквы. Часть библиотек (Piper, переводчики) не открывает такие файлы на Windows. Выберите папку с путём только из латинских букв, например F:\\Dubbly.": "Le chemin contient des lettres non latines. Certaines bibliothèques (Piper, traducteurs) n'ouvrent pas ces fichiers sous Windows. Choisissez un dossier dont le chemin n'a que des lettres latines, par exemple F:\\Dubbly.",
+ "В эту папку нельзя записывать. Выберите другую (например, на диске D: или F:).": "Impossible d'écrire dans ce dossier. Choisissez-en un autre (par exemple sur le lecteur D: ou F:).",
+ "Изменить…": "Modifier…",
+ "Где хранить скачанные модели, голоса и движки (несколько гигабайт). Можно выбрать другой диск.": "Où garder les modèles, voix et moteurs téléchargés (plusieurs gigaoctets). Vous pouvez choisir un autre lecteur.",
+ "Папка для моделей": "Dossier des modèles",
+ "Переношу скачанные модели… Это может занять несколько минут.": "Déplacement des modèles téléchargés… Cela peut prendre quelques minutes.",
+ "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Déplacer ce qui est déjà téléchargé ({size} Go) vers le nouveau dossier ? Sinon, les modèles nécessaires y seront retéléchargés lors de la prochaine traduction.",
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Impossible de tout déplacer : {err}. Les modèles manquants seront retéléchargés au besoin."
 }

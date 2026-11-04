@@ -13,7 +13,7 @@ import shutil
 from pathlib import Path
 from typing import Dict
 
-from .common import app_dir
+from .common import store_dir
 from .i18n import _
 
 PREFIX = "my:"
@@ -21,7 +21,7 @@ MIN_ONNX_BYTES = 64 * 1024
 
 
 def custom_dir() -> Path:
-    d = app_dir() / "voices"
+    d = store_dir() / "voices"
     d.mkdir(parents=True, exist_ok=True)
     return d
 

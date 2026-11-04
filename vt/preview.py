@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Callable, Dict
 
 from . import tts, voices
-from .common import CancelToken, app_dir
+from .common import CancelToken, store_dir
 from .languages import sample_for, sample_for_lang
 from .i18n import _
 
@@ -22,7 +22,7 @@ def resolve_voice(voice: str, target_lang: str, catalog: Dict[str, dict]) -> str
 
 
 def sample_path(key: str) -> Path:
-    d = app_dir() / "preview"
+    d = store_dir() / "preview"
     d.mkdir(parents=True, exist_ok=True)
     name = key.replace(":", "_")
     if voices.is_custom(key):

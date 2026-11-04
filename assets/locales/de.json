@@ -206,5 +206,13 @@
  "Только процессор": "Nur Prozessor",
  "Ускорение": "Beschleunigung",
  "llama.cpp ответил ошибкой: {err}": "llama.cpp hat einen Fehler gemeldet: {err}",
- "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modell in Ollama: bereits in Ollama vorhandene und empfohlene. Dubbly lädt das gewählte beim ersten Start selbst herunter."
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Modell in Ollama: bereits in Ollama vorhandene und empfohlene. Dubbly lädt das gewählte beim ersten Start selbst herunter.",
+ "В пути есть русские или другие не латинские буквы. Часть библиотек (Piper, переводчики) не открывает такие файлы на Windows. Выберите папку с путём только из латинских букв, например F:\\Dubbly.": "Der Pfad enthält nicht-lateinische Buchstaben. Einige Bibliotheken (Piper, Übersetzer) öffnen solche Dateien unter Windows nicht. Wählen Sie einen Ordner, dessen Pfad nur lateinische Buchstaben enthält, zum Beispiel F:\\Dubbly.",
+ "В эту папку нельзя записывать. Выберите другую (например, на диске D: или F:).": "In diesen Ordner kann nicht geschrieben werden. Wählen Sie einen anderen (zum Beispiel auf Laufwerk D: oder F:).",
+ "Изменить…": "Ändern…",
+ "Где хранить скачанные модели, голоса и движки (несколько гигабайт). Можно выбрать другой диск.": "Wo die heruntergeladenen Modelle, Stimmen und Engines liegen (mehrere Gigabyte). Sie können ein anderes Laufwerk wählen.",
+ "Папка для моделей": "Modellordner",
+ "Переношу скачанные модели… Это может занять несколько минут.": "Verschiebe die heruntergeladenen Modelle… Das kann einige Minuten dauern.",
+ "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Bereits Heruntergeladenes ({size} GB) in den neuen Ordner verschieben? Wenn nicht, werden die nötigen Modelle bei der nächsten Übersetzung dort neu heruntergeladen.",
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Nicht alles konnte verschoben werden: {err}. Fehlende Modelle werden bei Bedarf neu heruntergeladen."
 }

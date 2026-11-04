@@ -206,5 +206,13 @@
  "Только процессор": "Yalnızca işlemci",
  "Ускорение": "Hızlandırma",
  "llama.cpp ответил ошибкой: {err}": "llama.cpp bir hata döndürdü: {err}",
- "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Ollama'daki model: Ollama'da zaten olanlar ve önerilenler. Dubbly seçileni ilk çalıştırmada kendisi indirir."
+ "Модель в Ollama: скачанные в Ollama и рекомендованные. Dubbly скачает выбранную сам при первом запуске.": "Ollama'daki model: Ollama'da zaten olanlar ve önerilenler. Dubbly seçileni ilk çalıştırmada kendisi indirir.",
+ "В пути есть русские или другие не латинские буквы. Часть библиотек (Piper, переводчики) не открывает такие файлы на Windows. Выберите папку с путём только из латинских букв, например F:\\Dubbly.": "Yolda Latin olmayan harfler var. Bazı kütüphaneler (Piper, çevirmenler) Windows'ta bu tür dosyaları açamaz. Yolu yalnızca Latin harflerinden oluşan bir klasör seçin, örneğin F:\\Dubbly.",
+ "В эту папку нельзя записывать. Выберите другую (например, на диске D: или F:).": "Bu klasöre yazılamıyor. Başka bir klasör seçin (örneğin D: veya F: sürücüsünde).",
+ "Изменить…": "Değiştir…",
+ "Где хранить скачанные модели, голоса и движки (несколько гигабайт). Можно выбрать другой диск.": "İndirilen modeller, sesler ve motorlar nerede tutulsun (birkaç gigabayt). Başka bir sürücü seçebilirsiniz.",
+ "Папка для моделей": "Model klasörü",
+ "Переношу скачанные модели… Это может занять несколько минут.": "İndirilen modeller taşınıyor… Bu birkaç dakika sürebilir.",
+ "Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются туда заново при следующем переводе.": "Zaten indirilenler ({size} GB) yeni klasöre taşınsın mı? Hayır derseniz gerekli modeller bir sonraki çeviride oraya yeniden indirilir.",
+ "Не удалось перенести всё: {err}. Недостающие модели скачаются заново, когда понадобятся.": "Her şey taşınamadı: {err}. Eksik modeller gerektiğinde yeniden indirilecek."
 }

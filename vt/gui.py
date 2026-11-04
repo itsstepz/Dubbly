@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 import subprocess
 import threading
 
@@ -10,13 +11,14 @@ from PySide6.QtGui import QColor, QFont, QGuiApplication, QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QFileDialog, QFrame,
     QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
-    QPlainTextEdit, QProgressBar, QPushButton, QScrollArea, QSlider, QVBoxLayout, QWidget,
+    QPlainTextEdit, QProgressBar, QProgressDialog, QPushButton, QScrollArea, QSlider, QVBoxLayout, QWidget,
 )
 
 from . import __version__, fonts, i18n, pipeline, preview, runner, terms, theme, translate, tts, voices
 from .splash import Splash
 from .startup import installed_models, probe_gpu, voices_cache_note
 from .asr import WHISPER_HINTS, WHISPER_REPOS
+from . import common
 from .common import (DEFAULT_SETTINGS, CancelToken, Cancelled, load_settings, resource_path,
                      save_settings)
 from .i18n import N_, _
@@ -487,6 +489,19 @@ class MainWindow(QWidget):
         self.device.currentIndexChanged.connect(self._device_hint)
         ml.addWidget(self._field(_("Ускорение"), self.device, self.device_hint))
         ml.addWidget(self._field(_("Зеркало моделей"), self.mirror))
+        store_row = QWidget()
+        sr = QHBoxLayout(store_row)
+        sr.setContentsMargins(0, 0, 0, 0)
+        sr.setSpacing(8)
+        self.store_edit = QLineEdit()
+        self.store_edit.setReadOnly(True)
+        self.store_btn = QPushButton(_("Изменить…"))
+        self.store_btn.setToolTip(_("Где хранить скачанные модели, голоса и движки (несколько гигабайт). "
+                                    "Можно выбрать другой диск."))
+        self.store_btn.clicked.connect(self.change_store)
+        sr.addWidget(self.store_edit, 1)
+        sr.addWidget(self.store_btn)
+        ml.addWidget(self._field(_("Папка для моделей"), store_row))
         right.addWidget(more)
 
         # --- ход работы
@@ -538,6 +553,8 @@ class MainWindow(QWidget):
             self._device_hint()
             self.open_chk.setChecked(bool(self.s["open_folder"]))
             self.mirror.setText(self.s["hf_endpoint"])
+            self.store_edit.setText(str(common.store_dir()))
+            self.store_edit.setToolTip(self.store_edit.text())  # путь длинный — целиком в подсказке
             self.context.setPlainText(self.s.get("context", ""))
             self._update_hints()
             self.apply_theme(self.s.get("theme", "auto"))
@@ -848,6 +865,71 @@ class MainWindow(QWidget):
         self.glow.setEnabled(not busy)
         self.cancel_btn.setEnabled(busy)
         self.lang_combo.setEnabled(not busy)
+        self.store_btn.setEnabled(not busy)  # пока идёт перевод, файлы моделей в работе
+
+    # ------------------------------------------------------------------ папка для моделей
+    def change_store(self):
+        start = self.s.get("data_dir") or str(common.store_dir())
+        folder = QFileDialog.getExistingDirectory(self, _("Папка для моделей"), start)
+        if not folder:
+            return
+        old = common.store_dir()
+        default = common.app_dir()
+        new = default if Path(folder) in (default, default.parent) else common.store_for(folder)
+        if new == old:
+            return
+        if new != default:
+            problem = common.check_store_folder(folder)
+            if problem:
+                QMessageBox.warning(self, _("Папка для моделей"), _(problem))
+                return
+        size = common.folder_size(old) if old.exists() else 0
+        move = False
+        if size > 50 * 1024 * 1024:
+            ans = QMessageBox.question(
+                self, _("Папка для моделей"),
+                _("Перенести уже скачанное ({size} ГБ) в новую папку? Если нет, нужные модели скачаются "
+                  "туда заново при следующем переводе.", size=f"{size / 1024 ** 3:.1f}"),
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel, QMessageBox.Yes)
+            if ans == QMessageBox.Cancel:
+                return
+            move = ans == QMessageBox.Yes
+        if move and not self._move_store(old, new):
+            return
+        self.s["data_dir"] = "" if new == default else folder
+        save_settings(self.s)
+        common.reset_store_cache()
+        common.register_data_dirs()
+        self.store_edit.setText(str(common.store_dir()))
+        self.store_edit.setToolTip(self.store_edit.text())  # путь длинный — целиком в подсказке
+
+    def _move_store(self, old: Path, new: Path) -> bool:
+        """Переносит файлы в фоне, показывая окно ожидания. True — получилось."""
+        dlg = QProgressDialog(_("Переношу скачанные модели… Это может занять несколько минут."), "", 0, 0, self)
+        dlg.setCancelButton(None)
+        dlg.setWindowModality(Qt.WindowModal)
+        dlg.setMinimumDuration(0)
+        dlg.setWindowTitle(_("Папка для моделей"))
+        result: dict = {}
+
+        def job():
+            try:
+                common.move_store(old, new)
+            except Exception as e:  # noqa: BLE001
+                result["err"] = str(e)
+
+        t = threading.Thread(target=job, daemon=True)
+        t.start()
+        while t.is_alive():
+            QApplication.processEvents()
+            t.join(0.05)
+        dlg.close()
+        if "err" in result:
+            # часть уже в новой папке — переходим на неё; чего не хватит, скачается заново
+            QMessageBox.warning(self, _("Папка для моделей"),
+                                _("Не удалось перенести всё: {err}. Недостающие модели скачаются заново, "
+                                  "когда понадобятся.", err=result["err"]))
+        return True
 
     def start(self):
         inp, out = self.in_edit.text().strip(), self.out_edit.text().strip()
@@ -963,6 +1045,7 @@ def main():
     splash.step(_("Проверяю список голосов…"), 0.70, voices_cache_note)
     splash.step(_("Создаю окно и применяю тему…"), 0.88)
     w = MainWindow(state["family"])
+    common.register_data_dirs()  # для деинсталлятора: где лежат скачанные данные
     splash.step(_("Готово"), 1.0, min_time=0.35)
     w.showMaximized()  # программа открывается на весь экран
     splash.finish(w)

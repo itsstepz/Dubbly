@@ -73,14 +73,122 @@ def app_dir() -> Path:
     return _choose_app_dir(base, alt, os.name == "nt")
 
 
+# ---------- папка для моделей ----------
+# Тяжёлое (модели, голоса, движки, библиотеки CUDA, временные файлы) может лежать в папке,
+# которую выбрал пользователь (настройка data_dir), например на другом диске. Настройки
+# и личный словарь всегда остаются в app_dir(): так программа знает, где искать остальное.
+# В выбранной папке Dubbly работает только со своей подпапкой DubblyData — даже если выбран
+# целый диск, ни перенос, ни удаление программы не тронут чужие файлы.
+def N_(text: str) -> str:
+    """Метка «строку перевести» (как i18n.N_; импортировать i18n отсюда нельзя — он сам импортирует common).
+    Перевод делает тот, кто показывает текст: _(check_store_folder(...))."""
+    return text
+
+
+STORE_PARTS = ("models", "bin", "cuda", "voices", "work", "preview")
+STORE_SUBDIR = "DubblyData"
+_store: Optional[Path] = None
+
+
+def store_for(folder: str) -> Path:
+    """Папка данных внутри выбранной пользователем папки."""
+    p = Path(folder)
+    return p if p.name.lower() in (STORE_SUBDIR.lower(), "dubbly") else p / STORE_SUBDIR
+
+
+def store_dir() -> Path:
+    """Где лежат модели и прочее тяжёлое: выбранная папка или app_dir()."""
+    global _store
+    if _store is None:
+        custom = ""
+        try:
+            custom = json.loads((app_dir() / "settings.json").read_text(encoding="utf-8")).get("data_dir", "")
+        except Exception:
+            pass
+        d = app_dir()
+        if custom and _is_ascii(custom):
+            try:
+                cand = store_for(custom)
+                cand.mkdir(parents=True, exist_ok=True)
+                d = cand
+            except OSError:
+                pass  # диск отключён и т. п. — работаем в обычной папке
+        _store = d
+    return _store
+
+
+def reset_store_cache() -> None:
+    global _store
+    _store = None
+
+
+def check_store_folder(folder: str) -> Optional[str]:
+    """Пригодна ли папка для моделей. None — да, иначе причина для пользователя."""
+    if not _is_ascii(folder):
+        return N_("В пути есть русские или другие не латинские буквы. Часть библиотек (Piper, переводчики) "
+                  "не открывает такие файлы на Windows. Выберите папку с путём только из латинских букв, "
+                  "например F:\\Dubbly.")
+    try:
+        d = store_for(folder)
+        d.mkdir(parents=True, exist_ok=True)
+        probe = d / ".write_test"
+        probe.write_text("ok", encoding="ascii")
+        probe.unlink()
+    except OSError:
+        return N_("В эту папку нельзя записывать. Выберите другую (например, на диске D: или F:).")
+    return None
+
+
+def folder_size(path: Path) -> int:
+    total = 0
+    for p in path.rglob("*"):
+        try:
+            if p.is_file():
+                total += p.stat().st_size
+        except OSError:
+            pass
+    return total
+
+
+def move_store(old: Path, new: Path, cancel: Optional[CancelToken] = None) -> None:
+    """Переносит скачанное из old в new (только папки Dubbly; уже существующее в new не трогает)."""
+    new.mkdir(parents=True, exist_ok=True)
+    for part in STORE_PARTS:
+        src, dst = old / part, new / part
+        if not src.exists():
+            continue
+        if not dst.exists():
+            shutil.move(str(src), str(dst))
+            continue
+        for child in list(src.iterdir()):  # в новой папке уже что-то есть — переносим недостающее
+            if cancel:
+                cancel.check()
+            if not (dst / child.name).exists():
+                shutil.move(str(child), str(dst / child.name))
+
+
+def register_data_dirs() -> None:
+    """Записывает в реестр, где лежат данные Dubbly: деинсталлятор спросит, удалить ли их."""
+    if os.name != "nt":
+        return
+    try:
+        import winreg
+
+        dirs = list(dict.fromkeys(str(p) for p in (app_dir(), store_dir())))
+        with winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Dubbly") as k:
+            winreg.SetValueEx(k, "DataDirs", 0, winreg.REG_SZ, ";".join(dirs))
+    except Exception:
+        pass
+
+
 def models_dir() -> Path:
-    d = app_dir() / "models"
+    d = store_dir() / "models"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
 
 def bin_dir() -> Path:
-    d = app_dir() / "bin"
+    d = store_dir() / "bin"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -106,6 +214,7 @@ DEFAULT_SETTINGS = {
     "local_model": "gemma3:4b", # модель встроенной нейросети (llama.cpp)
     "ollama_url": "",           # адрес Ollama; пусто — http://127.0.0.1:11434
     "device": "auto",           # ускорение: auto, nvidia, vulkan (AMD/Intel), cpu — см. DEVICES
+    "data_dir": "",             # папка для моделей; пусто — папка данных программы (см. store_dir)
 }
 
 # Ускорение. Распознавание и NLLB/Opus/MADLAD (CTranslate2) умеют видеокарту только NVIDIA (CUDA);

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 from . import asr, cuda_libs, speak, terms, translate, tts
-from .common import CancelToken, Cancelled, app_dir, cuda_wanted, vulkan_wanted
+from .common import CancelToken, Cancelled, cuda_wanted, store_dir, vulkan_wanted
 from .ffmpeg_utils import decode_to_pcm, probe, run_ffmpeg
 from .languages import name_of
 from .i18n import _
@@ -207,7 +207,7 @@ def run(opts: Options, cancel: CancelToken, progress: Progress, log: Log) -> str
     # Временные файлы держим в папке данных программы (без кириллицы в пути): с такими
     # путями у Piper и части библиотек на Windows бывают проблемы.
     key = hashlib.sha1(f"{src_path.resolve()}|{out_path.resolve()}".encode("utf-8", "surrogatepass")).hexdigest()[:12]
-    work = app_dir() / "work" / key
+    work = store_dir() / "work" / key
     work.mkdir(parents=True, exist_ok=True)
     try:
         # 1. звук

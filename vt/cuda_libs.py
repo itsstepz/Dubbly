@@ -17,7 +17,7 @@ import zipfile
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
 
-from .common import Cancelled, CancelToken, app_dir, download_file, open_url
+from .common import Cancelled, CancelToken, download_file, open_url, store_dir
 from .i18n import _
 
 
@@ -29,7 +29,7 @@ GPU_OK = False  # итог prepare(): можно ли работать на ви
 
 
 def cuda_dir() -> Path:
-    d = app_dir() / "cuda"
+    d = store_dir() / "cuda"
     d.mkdir(parents=True, exist_ok=True)
     return d
 
